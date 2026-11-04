@@ -76,4 +76,4 @@ ai-coach is a personal project, used daily and still changing. It needs **kb-tem
 
 ## License
 
-[MIT](LICENSE) © 2026 Adrian Romanski. kb-template is a separate project with its own license.
+[MIT](LICENSE) © 2026 push-based. kb-template is a separate project with its own license.
