@@ -537,6 +537,7 @@ House rules:
 
 - **Important changes come with a decision record** in [`docs/adr/`](docs/adr/README.md), in the same commit. ADR-0001 says what counts. Start from `docs/adr/template.md`. Accepted records are never rewritten, only superseded.
 - **No comments in source code.** Names and tests carry the meaning (ADR-0011).
+- **Commit messages follow [Conventional Commits](https://www.conventionalcommits.org)**: `feat(cli): add the review command`, `fix(domain): …`, `docs: …`, `build: …`. CI checks every commit in a pull request (ADR-0033); `npx commitlint --from origin/main` checks yours before you push.
 - **Rules go in the domain, not in prompts.** If a model could talk its way past it, it belongs in code.
 - **New vault abilities belong in kb-template**, not in `adapter-vault-mcp`, which only wraps what the server offers.
 - **Never point tests or experiments at your real vault.** Use a copy.
