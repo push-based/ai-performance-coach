@@ -61,3 +61,7 @@ coach.config.json
 docs/kb-template-handoff/
 
 docs/handoff/
+
+## Docs site
+apps/docs/build
+apps/docs/.docusaurus

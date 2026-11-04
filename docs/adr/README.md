@@ -35,3 +35,4 @@ Every important or major change to ai-coach ships with an ADR in this folder; AD
 | [0029](0029-plan-the-vault-with-agent-skills-through-the-vault-tools-only.md)     | Plan the vault with agent skills that use only the vault tools                                   | superseded by ADR-0030 |
 | [0030](0030-plan-the-vault-with-the-full-set-of-vault-planning-tools.md)          | Plan the vault with the full set of vault planning tools, and pass every preview back on execute | proposed               |
 | [0031](0031-plan-habits-as-definitions-checked-off-per-day-never-carried-over.md) | Plan habits as definitions checked off per day, never carried over                               | proposed               |
+| [0032](0032-publish-the-docs-with-docusaurus-from-the-markdown-where-it-lives.md) | Publish the docs with Docusaurus, built from the Markdown where it lives                         | proposed               |

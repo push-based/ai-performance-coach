@@ -29,7 +29,8 @@
     "vitest": "~5.0.1"
   },
   "workspaces": [
-    "packages/*"
+    "packages/*",
+    "apps/*"
   ],
   "packageManager": "npm@11.20.0"
 }
