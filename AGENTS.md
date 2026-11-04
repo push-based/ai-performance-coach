@@ -25,3 +25,7 @@
 # Architecture decisions
 
 Every important or major change ships with an ADR in `docs/adr/`, in the same commit; ADR-0001 lists what counts. Read `docs/adr/README.md` before changing anything, copy `docs/adr/template.md` for a new decision, and never rewrite an accepted ADR: supersede it with a new one. Source code carries no comments (ADR-0011).
+
+# Commits
+
+Commit messages follow Conventional Commits (ADR-0033): `type(scope): subject`, with type one of `feat`, `fix`, `docs`, `refactor`, `perf`, `test`, `build`, `ci`, `chore`, `style` or `revert`, an optional scope naming the Nx project (`domain`, `cli`, `docs`, …), and a lower-case imperative subject without a full stop. A breaking change adds `!` after the type and a `BREAKING CHANGE:` footer. CI checks every commit in a pull request with commitlint; run `npx commitlint --from origin/main` to check locally.
