@@ -5,6 +5,7 @@
 ![Node 24+](https://img.shields.io/badge/node-%E2%89%A524-339933?logo=node.js&logoColor=white)
 ![TypeScript](https://img.shields.io/badge/TypeScript-6-3178C6?logo=typescript&logoColor=white)
 ![Runs locally](https://img.shields.io/badge/Tier%201-runs%20offline-success)
+[![Docs](https://img.shields.io/badge/docs-site-2f6f5e)](https://push-based.github.io/ai-performance-coach/)
 
 **A study partner that makes you explain what you've read, in your own words, until you really understand it.**
 
@@ -524,9 +525,13 @@ npx nx run-many -t lint typecheck # check style, types and package boundaries
 npx nx format:check               # check formatting
 npx nx test @ai-coach/domain      # test one package
 npx nx graph                      # see how the packages depend on each other
+npx nx serve docs                 # preview the documentation site
+npx nx build docs                 # build it and check every link
 ```
 
 CI runs format, lint, test, build and typecheck on every push to `main` and every pull request.
+
+The [documentation site](https://push-based.github.io/ai-performance-coach/) is built from this README, `ARCHITECTURE.md`, the package READMEs, the planning skills guide and the ADRs, and deploys from `main` (ADR-0032). Edit the Markdown where it is; `apps/docs` only arranges it.
 
 House rules:
 

@@ -1,0 +1,75 @@
+{
+  "name": "@ai-coach/docs",
+  "version": "0.0.1",
+  "private": true,
+  "nx": {
+    "name": "docs",
+    "tags": [
+      "type:docs"
+    ],
+    "targets": {
+      "build": {
+        "command": "docusaurus build --out-dir build",
+        "options": {
+          "cwd": "apps/docs"
+        },
+        "inputs": [
+          "{projectRoot}/**/*",
+          "!{projectRoot}/build/**/*",
+          "!{projectRoot}/.docusaurus/**/*",
+          "{workspaceRoot}/README.md",
+          "{workspaceRoot}/ARCHITECTURE.md",
+          "{workspaceRoot}/LICENSE",
+          "{workspaceRoot}/packages/*/README.md",
+          "{workspaceRoot}/.claude/skills/**/*.md",
+          "{workspaceRoot}/docs/adr/*.md",
+          {
+            "externalDependencies": [
+              "@docusaurus/core",
+              "@docusaurus/preset-classic",
+              "@easyops-cn/docusaurus-search-local"
+            ]
+          }
+        ],
+        "outputs": [
+          "{projectRoot}/build"
+        ],
+        "cache": true
+      },
+      "serve": {
+        "command": "docusaurus start",
+        "options": {
+          "cwd": "apps/docs"
+        },
+        "continuous": true
+      },
+      "serve-static": {
+        "command": "docusaurus serve --dir build",
+        "options": {
+          "cwd": "apps/docs"
+        },
+        "dependsOn": [
+          "build"
+        ],
+        "continuous": true
+      },
+      "clear": {
+        "command": "docusaurus clear",
+        "options": {
+          "cwd": "apps/docs"
+        }
+      }
+    }
+  },
+  "dependencies": {
+    "@docusaurus/core": "3.10.2",
+    "@docusaurus/preset-classic": "3.10.2",
+    "@easyops-cn/docusaurus-search-local": "0.55.3",
+    "@mdx-js/react": "^3.1.0",
+    "clsx": "^2.1.1",
+    "prism-react-renderer": "^2.4.1",
+    "react": "^19.2.0",
+    "react-dom": "^19.2.0",
+    "unist-util-visit": "^5.0.0"
+  }
+}
