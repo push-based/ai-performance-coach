@@ -2,7 +2,7 @@
 
 **The `coach` command.** This is the part you actually use: it reads your configuration, connects the vault, the local model and the judge, and walks you through each session in the terminal.
 
-For a full tour of the commands, see the [main README](../../README.md#commands).
+For a full tour of the commands, see the [commands guide](../../docs/guide/commands.md).
 
 ## Running it
 
@@ -35,7 +35,7 @@ npm run coach -- due --today 2026-11-01
 
 ## Configuration
 
-The CLI finds its settings in `--config <file>`, then `./coach.config.json`, then `$XDG_CONFIG_HOME/ai-coach/config.json` (by default `~/.config/ai-coach/config.json`). Environment variables override the file. Every setting is explained in the [main README](../../README.md#configuration).
+The CLI finds its settings in `--config <file>`, then `./coach.config.json`, then `$XDG_CONFIG_HOME/ai-coach/config.json` (by default `~/.config/ai-coach/config.json`). Environment variables override the file. Every setting is explained in the [configuration guide](../../docs/guide/configuration.md).
 
 A minimal file:
 

@@ -1,0 +1,51 @@
+# Commands
+
+Every command, option and key the `coach` CLI understands. Run any command as:
+
+```sh
+npm run coach -- <command>
+```
+
+**Every change to your vault is shown first.** Nothing is written, moved or recorded until you confirm.
+
+## Commands
+
+| Command                | What it does                                                                                                                               |
+| ---------------------- | ------------------------------------------------------------------------------------------------------------------------------------------ |
+| `due`                  | What's due for review today, and what has never been sparred. The default when you type no command.                                        |
+| `list`                 | Every note in Resources with how well you know it: unsparred, attempted, Tier 1 passed, Tier 2 passed.                                     |
+| `synthesize [book]`    | Turn your marks and reading notes on a book into concept notes. Without a book, you pick one from a list.                                  |
+| `spar [note …]`        | Tier 1, offline. Spar the notes that are due, or the notes you name (by path or coach id).                                                 |
+| `judge [session …]`    | Tier 2, online. Judge the sparring sessions waiting for it.                                                                                |
+| `study <note>`         | Work through the gaps from a note's latest failed session.                                                                                 |
+| `capture <title>`      | Write a quick note into `0.Inbox`. End it with a line holding a single `.`.                                                                |
+| `file <note> <folder>` | Move a note into a PARA folder, e.g. `file "0.Inbox/Idea.md" 3.Resources/TypeScript`. Without arguments, lists what's waiting to be filed. |
+| `archive <project>`    | Move a finished project into `4.Archive`. It first asks which concept and sparred notes to keep in Resources.                              |
+| `init`                 | Set up the five PARA folders in your vault.                                                                                                |
+| `view`                 | Open the vault graph in your browser at http://127.0.0.1:4747/, where you can also mark chapters. `/plans` shows your plans.               |
+
+## Options
+
+| Option               | Meaning                                                                      |
+| -------------------- | ---------------------------------------------------------------------------- |
+| `--style <style>`    | Coach in this style for this run. See [Coaching styles](coaching-styles.md). |
+| `--config <file>`    | Use a different configuration file.                                          |
+| `--today YYYY-MM-DD` | Pretend it's another day, e.g. to see what will be due next week.            |
+| `--help`, `-h`       | Show the command list.                                                       |
+
+## While you answer
+
+| Type                  | To                                                                |
+| --------------------- | ----------------------------------------------------------------- |
+| an empty line         | send your answer (answers can span several lines)                 |
+| `/skip`               | skip this note, question or gap                                   |
+| `/quit`               | stop; nothing is recorded unless you confirm it                   |
+| `/hint` or "teach me" | in study: get a clue and the author's words, without losing a try |
+
+## Exit codes
+
+| Code | Meaning                                      |
+| ---- | -------------------------------------------- |
+| `0`  | success                                      |
+| `1`  | an error the coach explained                 |
+| `2`  | a usage error: unknown command or bad option |

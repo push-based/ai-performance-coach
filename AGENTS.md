@@ -29,3 +29,7 @@ Every important or major change ships with an ADR in `docs/adr/`, in the same co
 # Commits
 
 Commit messages follow Conventional Commits (ADR-0033): `type(scope): subject`, with type one of `feat`, `fix`, `docs`, `refactor`, `perf`, `test`, `build`, `ci`, `chore`, `style` or `revert`, an optional scope naming the Nx project (`domain`, `cli`, `docs`, …), and a lower-case imperative subject without a full stop. A breaking change adds `!` after the type and a `BREAKING CHANGE:` footer. CI checks every commit in a pull request with commitlint; run `npx commitlint --from origin/main` to check locally.
+
+# Documentation
+
+Each kind of doc has one home (ADR-0034): `README.md` is the one-screen front door, `docs/guide/` is how to use ai-coach (commands, configuration, privacy, troubleshooting, glossary), `CONTRIBUTING.md` is how to work on it, `ARCHITECTURE.md` and package READMEs are how it is built, `docs/adr/` is why. Change a command or setting in its guide page, not the README. Write for a newcomer: say who the page is for, use "you" and short sentences, and link terms to `docs/guide/glossary.md`. Run `npx nx build docs` after editing docs; it fails on broken links.

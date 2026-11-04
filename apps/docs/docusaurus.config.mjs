@@ -85,6 +85,12 @@ export default {
           position: 'left',
           activeBaseRegex: '^/[^/]*/?$',
         },
+        {
+          to: '/guide/setup',
+          label: 'Guide',
+          position: 'left',
+          activeBaseRegex: '/guide/',
+        },
         { to: '/architecture', label: 'Architecture', position: 'left' },
         { to: '/planning', label: 'Planning', position: 'left' },
         { to: '/decisions', label: 'Decisions', position: 'left' },
@@ -98,6 +104,8 @@ export default {
           title: 'Docs',
           items: [
             { label: 'Getting started', to: '/' },
+            { label: 'Setup', to: '/guide/setup' },
+            { label: 'Configuration', to: '/guide/configuration' },
             { label: 'Architecture', to: '/architecture' },
             { label: 'Planning with Claude Code', to: '/planning' },
             { label: 'Decisions', to: '/decisions' },
@@ -107,6 +115,7 @@ export default {
           title: 'Source',
           items: [
             { label: 'GitHub', href: github },
+            { label: 'Contributing', to: '/contributing' },
             {
               label: 'License (MIT)',
               href: `${github}/blob/${BRANCH}/LICENSE`,

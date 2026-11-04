@@ -1,8 +1,14 @@
-import { adrFiles, adrId, packages } from './src/sources.mjs';
+import { GUIDE, adrFiles, adrId, packages } from './src/sources.mjs';
 
 export default {
   docs: [
     'README',
+    {
+      type: 'category',
+      label: 'Guide',
+      collapsed: false,
+      items: GUIDE.map((page) => `docs/guide/${page}`),
+    },
     'ARCHITECTURE',
     {
       type: 'category',
@@ -17,6 +23,7 @@ export default {
       link: { type: 'doc', id: '.claude/skills/README' },
       items: ['.claude/skills/vault-planning/conventions'],
     },
+    'CONTRIBUTING',
     {
       type: 'category',
       label: 'Decisions',

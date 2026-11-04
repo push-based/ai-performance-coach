@@ -20,9 +20,10 @@ Why each part is the way it is lives in the ADRs in [`docs/adr/`](docs/adr/READM
                                   └──HTTPS, Tier 2 payload only──► Gemini (the judge)
 ```
 
-- **kb-template** owns the vault. Its `docs-mcp` server is the only program that reads or writes vault files (ADR-0003). It keeps the sparring history, checks quotes against books, and runs the planning model.
-- **The `coach` CLI** starts `docs-mcp serve --vault <vault>` as a child process and talks to it over MCP on stdio.
-- **The planning skills** in `.claude/skills/` are instructions for Claude Code, not code. They reach the same server through the MCP registration Claude Code loads, and never touch vault files directly (ADR-0029, ADR-0030).
+- **kb-template** owns the vault. Its `docs-mcp` server is the only program that reads or writes vault files (ADR-0003). It keeps the PARA layout, converts PDFs into chapter notes, checks quotes against books, keeps the sparring history in `Coach/sessions/`, runs the planning model in `Plans/`, and serves the graph view on port 4747. Every write it offers is a preview until called with `execute`.
+- **The `coach` CLI** holds the learning rules, the conversations with Gemma and Gemini, and the confirm-before-write terminal flow. It starts `node <docsMcpBin> serve --vault <vault>` as a child process for each command, talks to it over MCP on stdio, and stops it when the command ends.
+- **Ollama** runs Gemma locally. The CLI refuses any Ollama host that is not on loopback.
+- **The planning skills** in `.claude/skills/` are instructions for Claude Code, not code. They reach the same server through the MCP registration Claude Code loads (Claude Code starts its own copy), and never touch vault files directly (ADR-0029, ADR-0030).
 
 ## Projects
 
@@ -49,7 +50,17 @@ Why each part is the way it is lives in the ADRs in [`docs/adr/`](docs/adr/READM
 | `adapter-local-state` | `type:adapter`, `adapter:local-state` | `FilePendingJudgements`, `SystemClock`                                                                                                                                                                                | core; `zod`, Node                               |
 | `cli`                 | `type:app`                            | Terminal I/O, config, commands, and `composeCoach`, the only place a port meets its adapter                                                                                                                           | everything                                      |
 
-Adapters never import each other, and nothing imports the `cli`.
+Adapters never import each other, and nothing imports the `cli`. Each package's README says what it does in plain words:
+
+| Package                                                         | In one line                                                                     |
+| --------------------------------------------------------------- | ------------------------------------------------------------------------------- |
+| [`domain`](packages/domain/README.md)                           | The rules of learning: rounds, verdicts, the review schedule. No I/O at all.    |
+| [`application`](packages/application/README.md)                 | The things you can do (spar, judge, study, synthesize) and the ports they need. |
+| [`adapter-ollama`](packages/adapter-ollama/README.md)           | The local sparring partner, powered by Gemma.                                   |
+| [`adapter-gemini`](packages/adapter-gemini/README.md)           | The online judge, powered by Gemini.                                            |
+| [`adapter-vault-mcp`](packages/adapter-vault-mcp/README.md)     | Talks to your vault through kb-template's server.                               |
+| [`adapter-local-state`](packages/adapter-local-state/README.md) | Remembers which sessions are waiting for the judge, and what day it is.         |
+| [`cli`](packages/cli/README.md)                                 | The `coach` command you type.                                                   |
 
 ## Ports and who provides them
 

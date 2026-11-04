@@ -9,6 +9,8 @@ export const repoRoot = fileURLToPath(new URL('../../..', import.meta.url));
 export const INCLUDE = [
   'README.md',
   'ARCHITECTURE.md',
+  'CONTRIBUTING.md',
+  'docs/guide/*.md',
   'packages/*/README.md',
   '.claude/skills/README.md',
   '.claude/skills/vault-planning/conventions.md',
@@ -16,6 +18,17 @@ export const INCLUDE = [
 ];
 
 export const EXCLUDE = ['docs/adr/template.md', '**/node_modules/**'];
+
+export const GUIDE = [
+  'setup',
+  'first-session',
+  'commands',
+  'coaching-styles',
+  'configuration',
+  'privacy',
+  'troubleshooting',
+  'glossary',
+];
 
 const PACKAGE_ORDER = [
   'domain',
@@ -76,6 +89,13 @@ export function pageFor(path, frontMatter) {
       title: 'Getting started',
       sidebar_label: 'Getting started',
     };
+  }
+  if (path === 'CONTRIBUTING.md') {
+    return { slug: '/contributing', sidebar_label: 'Contributing' };
+  }
+  const guide = path.match(/^docs\/guide\/(.+)\.md$/);
+  if (guide) {
+    return { slug: `/guide/${guide[1]}` };
   }
   if (path === 'ARCHITECTURE.md') {
     return { slug: '/architecture', sidebar_label: 'Architecture' };

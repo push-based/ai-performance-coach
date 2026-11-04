@@ -19,6 +19,8 @@
           "!{projectRoot}/.docusaurus/**/*",
           "{workspaceRoot}/README.md",
           "{workspaceRoot}/ARCHITECTURE.md",
+          "{workspaceRoot}/CONTRIBUTING.md",
+          "{workspaceRoot}/docs/guide/*.md",
           "{workspaceRoot}/LICENSE",
           "{workspaceRoot}/packages/*/README.md",
           "{workspaceRoot}/.claude/skills/**/*.md",

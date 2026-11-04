@@ -37,3 +37,4 @@ Every important or major change to ai-coach ships with an ADR in this folder; AD
 | [0031](0031-plan-habits-as-definitions-checked-off-per-day-never-carried-over.md) | Plan habits as definitions checked off per day, never carried over                               | proposed               |
 | [0032](0032-publish-the-docs-with-docusaurus-from-the-markdown-where-it-lives.md) | Publish the docs with Docusaurus, built from the Markdown where it lives                         | proposed               |
 | [0033](0033-write-commit-messages-as-conventional-commits.md)                     | Write commit messages as Conventional Commits, checked in pull requests                          | proposed               |
+| [0034](0034-split-the-docs-into-a-short-readme-a-guide-and-contributing.md)       | Split the docs into a short README, a user guide and a contributing guide                        | proposed               |

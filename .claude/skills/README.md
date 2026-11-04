@@ -43,7 +43,7 @@ When a request spans periods, the skills run from the largest down: a year befor
 
 ## Set it up
 
-**1. Have the vault server ready.** Build kb-template's `docs-mcp` as in the [main README](../../README.md#set-it-up). The planning tools need a recent build. If a skill reports that `add_tasks`, `plan_days` or `add_habits` is missing, pull and rebuild kb-template.
+**1. Have the vault server ready.** Build kb-template's `docs-mcp` as in the [setup guide](../../docs/guide/setup.md#1-build-kb-templates-vault-server). The planning tools need a recent build. If a skill reports that `add_tasks`, `plan_days` or `add_habits` is missing, pull and rebuild kb-template.
 
 **2. Create your `.mcp.json`.** Claude Code reaches the vault server through a `.mcp.json` file at the repository root. The repository doesn't ship one, because it holds your own paths: it is git-ignored. Copy the example and fill in two absolute paths:
 
