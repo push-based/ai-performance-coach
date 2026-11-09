@@ -1,6 +1,6 @@
 import { stripVTControlCharacters } from 'node:util';
 import type { ConceptClimb } from '@ai-coach/application';
-import type { StepRecord } from '@ai-coach/domain';
+import { CLIMB_STEPS, type ClimbStep, type ClimbSteps } from '@ai-coach/domain';
 import { climb } from './climb.js';
 import type { Coach } from './composition.js';
 import type { Terminal } from './terminal.js';
@@ -18,24 +18,28 @@ class ScriptedTerminal implements Terminal {
   }
 }
 
-const TOKENS =
-  '3.Resources/Concepts/Design System Architecture/Design tokens.md';
+const TOKENS = '3.Resources/Concepts/Design tokens.md';
 
-const done = (...steps: StepRecord['step'][]): StepRecord[] =>
-  steps.map((step) => ({ step, date: '2026-11-10', evidence: TOKENS }));
+function steps(...done: ClimbStep[]): ClimbSteps {
+  return Object.fromEntries(
+    CLIMB_STEPS.map((s) => [
+      s,
+      done.includes(s) ? { date: '2026-11-10', evidence: 's-1' } : null,
+    ]),
+  ) as ClimbSteps;
+}
 
 function tokens(overrides: Partial<ConceptClimb> = {}): ConceptClimb {
   return {
     path: TOKENS,
     title: 'Design tokens',
-    climb: {
-      conceptId: 'c-1',
-      done: done('read', 'group', 'generate', 'retrieve'),
-      spacedPass: null,
-    },
+    steps: steps('read', 'group', 'generate', 'retrieve'),
+    stored: null,
+    current: true,
     next: 'elaborate',
     skipped: [],
-    teach: { ok: false, reason: 'Teach needs a passed review' },
+    spacedPass: null,
+    teach: { ok: false, reason: 'Teach needs a passed spaced review' },
     ...overrides,
   };
 }
@@ -71,27 +75,14 @@ describe('coach climb', () => {
     await climb(
       coachWith([
         tokens({
-          climb: { conceptId: 'c-1', done: done('read'), spacedPass: null },
-          next: 'group',
-          skipped: [],
-        }),
-        tokens({
           title: 'Primitives',
-          climb: {
-            conceptId: 'c-2',
-            done: done('read', 'elaborate'),
-            spacedPass: null,
-          },
+          steps: steps('read', 'elaborate'),
           next: 'group',
           skipped: ['group', 'generate', 'retrieve'],
         }),
         tokens({
           title: 'Components',
-          climb: {
-            conceptId: 'c-3',
-            done: done('read', 'group', 'generate'),
-            spacedPass: null,
-          },
+          steps: steps('read', 'group', 'generate'),
           next: 'retrieve',
         }),
       ]),
@@ -110,43 +101,27 @@ describe('coach climb', () => {
     await climb(
       coachWith([
         tokens({
-          climb: {
-            conceptId: 'c-1',
-            done: done(
-              'read',
-              'group',
-              'generate',
-              'retrieve',
-              'elaborate',
-              'space',
-            ),
-            spacedPass: null,
-          },
+          steps: steps(
+            'read',
+            'group',
+            'generate',
+            'retrieve',
+            'elaborate',
+            'space',
+          ),
           next: 'teach',
         }),
       ]),
       locked,
       ['Design tokens'],
     );
-    expect(locked.text()).toContain('Teach needs a passed review');
+    expect(locked.text()).toContain('Teach needs a passed spaced review');
 
     const finished = new ScriptedTerminal();
     await climb(
       coachWith([
         tokens({
-          climb: {
-            conceptId: 'c-1',
-            done: done(
-              'read',
-              'group',
-              'generate',
-              'retrieve',
-              'elaborate',
-              'space',
-              'teach',
-            ),
-            spacedPass: done('space')[0]!,
-          },
+          steps: steps(...CLIMB_STEPS),
           next: null,
           teach: { ok: true },
         }),
@@ -156,6 +131,12 @@ describe('coach climb', () => {
     );
     expect(finished.text()).toContain('✓ Teach');
     expect(finished.text()).toContain('all seven steps done');
+  });
+
+  it('warns when the stored summary disagrees with the evidence', async () => {
+    const term = new ScriptedTerminal();
+    await climb(coachWith([tokens({ current: false })]), term, []);
+    expect(term.text()).toContain('rebuild_climb');
   });
 
   it('says how to get concept notes when there are none', async () => {

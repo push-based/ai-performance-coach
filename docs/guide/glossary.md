@@ -8,7 +8,7 @@ A word you may not hide behind when you explain an idea, such as "synergy" or "b
 
 ## Climb
 
-The seven steps from feeling you understand an idea to mastering it: **Read**, **Group**, **Generate**, **Retrieve**, **Elaborate**, **Space** and **Teach**. Each is harder than the last, and in each you do the work, not the model. `coach climb` shows which steps you've done on each [concept note](#concept-note). Retrieve is a [spar](#spar) session; Space is a spar session at least a day after the one before. Teach opens only after you pass such a spaced review.
+The seven steps from feeling you understand an idea to mastering it: **Read**, **Group**, **Generate**, **Retrieve**, **Elaborate**, **Space** and **Teach**. Each is harder than the last, and in each you do the work, not the model. `coach climb` shows which steps you've done on each [concept note](#concept-note). A step counts only when your vault holds the proof, such as your reading notes or a spar session. Retrieve is a [spar](#spar) session; Space is a spar session at least a day after the one before. Teach opens only after you pass such a spaced review.
 
 ## Coaching style
 

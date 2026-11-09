@@ -13,7 +13,7 @@ Each command you type in the terminal maps to one _use case_ here. A use case de
 | **Judging**      | Takes queued sessions, builds the privacy-checked payload, asks the judge, applies the verdict rule and records the result.                                    | `coach judge`                              |
 | **Studying**     | Walks the gaps of a note's latest failed session with hints, the author's passage and a limited number of tries. Can keep your explanations as a new note.     | `coach study`                              |
 | **Synthesizing** | Finds a book, gathers your marks and reading notes, proposes ideas, asks gap questions, drafts assertions and quotes, then previews and writes a concept note. | `coach synthesize`                         |
-| **Climbing**     | Finds a concept note by title, path or coach id and builds its climb from the frontmatter and the session history.                                             | `coach climb`                              |
+| **Climbing**     | Finds a concept note by title, path or coach id and asks the vault for its climb: each step's evidence, the next step and whether Teach is open.               | `coach climb`                              |
 | **Filing**       | Previews and applies moves in the vault: file, capture, archive, set up PARA.                                                                                  | `coach file`, `capture`, `archive`, `init` |
 
 ## The ports

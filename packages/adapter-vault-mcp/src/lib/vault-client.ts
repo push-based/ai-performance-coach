@@ -5,6 +5,7 @@ import {
 } from '@modelcontextprotocol/sdk/client/stdio.js';
 import type { z } from 'zod';
 import {
+  ClimbResult,
   CreateConceptResult,
   DueForReviewResult,
   FindPassagesResult,
@@ -148,6 +149,10 @@ export class VaultClient {
 
   dueForReview(args: { today?: string } = {}): Promise<DueForReviewResult> {
     return this.call('due_for_review', args, DueForReviewResult);
+  }
+
+  climb(args: { note?: string } = {}): Promise<ClimbResult> {
+    return this.call('climb', args, ClimbResult);
   }
 
   tier2Payload(

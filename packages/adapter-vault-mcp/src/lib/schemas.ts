@@ -288,3 +288,37 @@ export const CreateConceptResult = z.object({
   executed: z.boolean(),
 });
 export type CreateConceptResult = z.infer<typeof CreateConceptResult>;
+
+const StepEvidence = z.object({ date: IsoDate, evidence: z.string() });
+const ClimbStepName = z.enum([
+  'read',
+  'group',
+  'generate',
+  'retrieve',
+  'elaborate',
+  'space',
+  'teach',
+]);
+
+export const ClimbResult = z.array(
+  z.object({
+    path: z.string(),
+    title: z.string(),
+    steps: z.object({
+      read: StepEvidence.nullable(),
+      group: StepEvidence.nullable(),
+      generate: StepEvidence.nullable(),
+      retrieve: StepEvidence.nullable(),
+      elaborate: StepEvidence.nullable(),
+      space: StepEvidence.nullable(),
+      teach: StepEvidence.nullable(),
+    }),
+    stored: z.record(ClimbStepName, IsoDate.nullable()).nullable(),
+    current: z.boolean(),
+    next: ClimbStepName.nullable(),
+    skipped: z.array(ClimbStepName),
+    spacedPass: StepEvidence.nullable(),
+    teach: z.object({ ok: z.boolean(), reason: z.string().optional() }),
+  }),
+);
+export type ClimbResult = z.infer<typeof ClimbResult>;

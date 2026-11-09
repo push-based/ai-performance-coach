@@ -1,5 +1,5 @@
 import type { ConceptClimb } from '@ai-coach/application';
-import { CLIMB_STEPS, isDone, type ClimbStep } from '@ai-coach/domain';
+import { CLIMB_STEPS, type ClimbStep } from '@ai-coach/domain';
 import type { Coach } from './composition.js';
 import { paint, type Terminal } from './terminal.js';
 
@@ -22,7 +22,7 @@ function command(step: ClimbStep, path: string): string | null {
 }
 
 function stepLabel(c: ConceptClimb, step: ClimbStep): string {
-  if (!isDone(c.climb, step)) return paint('dim', `· ${LABEL[step]}`);
+  if (!c.steps[step]) return paint('dim', `· ${LABEL[step]}`);
   return paint(step === 'teach' ? 'yellow' : 'green', `✓ ${LABEL[step]}`);
 }
 
@@ -40,9 +40,15 @@ function nextLine(c: ConceptClimb): string {
 }
 
 export function stairs(c: ConceptClimb, width = TITLE_WIDTH): string[] {
+  const indent = ' '.repeat(width + 1);
   return [
     `${c.title.padEnd(width)} ${CLIMB_STEPS.map((s) => stepLabel(c, s)).join('  ')}`,
-    `${' '.repeat(width + 1)}${paint('dim', nextLine(c))}`,
+    `${indent}${paint('dim', nextLine(c))}`,
+    ...(c.current
+      ? []
+      : [
+          `${indent}${paint('yellow', 'the climb: summary in the note does not match its evidence; the vault tool rebuild_climb fixes it')}`,
+        ]),
   ];
 }
 

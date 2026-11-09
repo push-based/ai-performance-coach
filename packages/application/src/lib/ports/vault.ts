@@ -1,5 +1,6 @@
 import type {
-  ClimbDates,
+  ClimbStep,
+  ClimbSteps,
   CoachingStyle,
   Mastery,
   ParaBucket,
@@ -59,7 +60,6 @@ export interface NoteDetails extends NoteSummary {
   chapter: BookChapter | null;
   concept: ConceptDetails | null;
   style: CoachingStyle | null;
-  climb: ClimbDates;
 }
 
 export interface InvalidSession {
@@ -88,12 +88,30 @@ export interface DueReport {
   invalidSessions: InvalidSession[];
 }
 
+export interface StepEvidence {
+  date: string;
+  evidence: string;
+}
+
+export interface ConceptClimb {
+  path: string;
+  title: string;
+  steps: ClimbSteps;
+  stored: Record<ClimbStep, string | null> | null;
+  current: boolean;
+  next: ClimbStep | null;
+  skipped: ClimbStep[];
+  spacedPass: StepEvidence | null;
+  teach: { ok: boolean; reason?: string };
+}
+
 export interface NotesRepository {
   listNotes(filter?: {
     bucket?: ParaBucket | 'out_of_place';
   }): Promise<NoteListing>;
   readNote(path: string): Promise<NoteDetails>;
   dueForReview(today: string): Promise<DueReport>;
+  climb(note?: string): Promise<ConceptClimb[]>;
 }
 
 export type NoteRef = { path: string } | { coachId: string };
