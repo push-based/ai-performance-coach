@@ -8,7 +8,7 @@ A word you may not hide behind when you explain an idea, such as "synergy" or "b
 
 ## Climb
 
-The seven steps from feeling you understand an idea to mastering it: **Read**, **Group**, **Generate**, **Retrieve**, **Elaborate**, **Space** and **Teach**. Each is harder than the last, and in each you do the work, not the model. `coach climb` shows which steps you've done on each [concept note](#concept-note). A step counts only when your vault holds the proof, such as your reading notes or a spar session. Retrieve is a [spar](#spar) session; Space is a spar session at least a day after the one before. Teach opens only after you pass such a spaced review.
+The seven steps from feeling you understand an idea to mastering it: **Read**, **Group**, **Generate**, **Retrieve**, **Elaborate**, **Space** and **Teach**. Each is harder than the last, and in each you do the work, not the model. `coach climb` shows which steps you've done on each [concept note](#concept-note). A step counts only when your vault holds the proof, such as your reading notes or a spar session. Retrieve is a [spar](#spar) session; Space is a spar session at least a day after the one before. Teach opens only after you pass such a spaced review, and closes while the judge's latest verdict on the idea is a fail. [The climb](the-climb.md) explains each step.
 
 ## Coaching style
 
@@ -38,6 +38,10 @@ Writing down everything you remember about an idea, with the note closed, before
 
 Trying to answer before you see the answer: explaining a [concept note](#concept-note) from its title, or saying what a chapter will teach before you read it. You then mark each point as got it, wrong or missed, and correct each wrong guess in your own words. `coach generate` runs it. It is the Generate step of the [climb](#climb), and is never graded.
 
+## Group
+
+Sorting a book's [concept notes](#concept-note) into groups you name, and saying which group builds on which. `coach group` runs it and writes the [structure note](#structure-note). It is the Group step of the [climb](#climb).
+
 ## Judge
 
 The online model (Gemini) that gives a second, stricter verdict on your sparring answers. Also called **Tier 2**. It sees only the questions and your answers, never your notes.
@@ -58,6 +62,10 @@ Converted books and other sources under `3.Resources/0.Raw/`. You read, mark and
 
 The first step of the [climb](#climb): reading [raw material](#raw-material) and writing down, in your own words, what resonated, then summing the chapter up. `coach read` takes you through a chapter page by page. A note that copies six words in a row from the page is a quote, and only your own words count.
 
+## Retrieve
+
+Explaining an idea from memory, with the note closed. A [spar](#spar) session on a [concept note](#concept-note) is the Retrieve step of the [climb](#climb), passed or failed; the [judge](#judge) then checks it.
+
 ## Review
 
 Coming back to an idea when it's due. A new idea comes back the next day. Each pass pushes the next review further out; a fail brings it back tomorrow. When several ideas are due, their topics are mixed.
@@ -65,6 +73,10 @@ Coming back to an idea when it's due. A new idea comes back the next day. Each p
 ## Session
 
 One recorded sparring round on one note: the questions, your answers and the verdict. Sessions live in your vault under `Coach/sessions/`.
+
+## Space
+
+Coming back to an idea after a gap, at least a day after your previous attempt, and sparring it again. It is the Space step of the [climb](#climb). A spaced spar you pass opens [Teach](#teach).
 
 ## Spar
 
@@ -84,7 +96,7 @@ Turning your marks on a book into concept notes, one idea each.
 
 ## Teach
 
-The last step of the [climb](#climb): explaining an idea to someone who doesn't know it. In `coach teach` the coach plays a student who knows only the title and believes one wrong thing about it. You pass when you've corrected that, taught every [core assertion](#core-assertion), and explained every term you used. It's based on the [Protégé Effect](#protégé-effect).
+The last step of the [climb](#climb): explaining an idea to someone who doesn't know it. In `coach teach` the coach plays a student who knows only the title and believes one wrong thing about it. You pass when you've corrected that, taught every [core assertion](#core-assertion), and explained every term you used. It's based on the [Protégé Effect](#protégé-effect). If the judge fails your latest round on an idea, Teach closes until you pass it again.
 
 ## Protégé Effect
 

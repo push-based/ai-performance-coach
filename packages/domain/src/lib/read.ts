@@ -37,6 +37,21 @@ export function sections(body: string): Section[] {
   return whole ? [{ page: null, text: whole }] : [];
 }
 
+function flat(text: string): string {
+  return words(text.replace(/(\p{L})-[ \t]*\n[ \t]*(\p{Ll})/gu, '$1$2')).join(
+    ' ',
+  );
+}
+
+export function locateQuote(quote: string, body: string): Section | null {
+  const needle = flat(quote);
+  if (!needle) return null;
+  return (
+    sections(body).find((s) => ` ${flat(s.text)} `.includes(` ${needle} `)) ??
+    null
+  );
+}
+
 export function hasChapterSummary(body: string): boolean {
   return extractMarks(body).some(
     (m) => m.kind === 'summary' && m.page === null,

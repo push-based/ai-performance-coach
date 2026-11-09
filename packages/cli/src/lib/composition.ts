@@ -132,7 +132,7 @@ export async function composeCoach(
         ladder: config.ladder,
         includeAssertions: config.judge.includeAssertions,
       }),
-    climbing: () => new Climbing(vault),
+    climbing: () => new Climbing(vault, pending),
     teaching: () =>
       new Teaching({
         notes: vault,

@@ -1,5 +1,6 @@
 import {
   hasChapterSummary,
+  locateQuote,
   noteShare,
   readingNote,
   sections,
@@ -75,5 +76,33 @@ describe('reading a chapter', () => {
         6,
       ),
     ).toMatch(/own words/);
+  });
+});
+
+describe('locateQuote', () => {
+  const body = [
+    '> [!summary]',
+    '> Tokens first, in my words.',
+    '',
+    '## Page 1',
+    'Design tokens are named values for colour, spac-',
+    'ing and type.',
+    '',
+    '## Page 2',
+    'Every other layer reads its **values** from the tokens.',
+  ].join('\n');
+
+  it('finds the page of a quote across line breaks, hyphens and marks', () => {
+    expect(
+      locateQuote('named values for colour, spacing and type', body)?.page,
+    ).toBe(1);
+    expect(locateQuote('Every other layer reads its values', body)?.page).toBe(
+      2,
+    );
+  });
+
+  it('finds nothing for words the chapter does not hold, or only in its summary', () => {
+    expect(locateQuote('named values for typography', body)).toBeNull();
+    expect(locateQuote('Tokens first, in my words.', body)).toBeNull();
   });
 });

@@ -15,6 +15,14 @@ export function tier2History(note: NoteDetails): Tier2Outcome[] {
     .map((s) => ({ verdict: s.verdict, gaps: s.gaps.length }));
 }
 
+export const JUDGE_FAILED =
+  'The judge failed the latest round on this concept: spar it and pass again before teaching';
+
+export function judgeFailedLatest(note: NoteDetails): boolean {
+  const latest = note.sessions.at(-1);
+  return latest?.tier === 2 && latest.verdict === 'fail';
+}
+
 export async function resourcesByCoachId(
   notes: NotesRepository,
 ): Promise<Map<string, string>> {

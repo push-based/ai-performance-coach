@@ -29,7 +29,7 @@ The coach lists your books, groups your marks into a few ideas and lets you pick
 2. The coach asks up to two questions about anything your marks say that your summary leaves out, then always asks why the idea matters. `/skip` passes.
 3. It drafts the idea's **[core assertions](glossary.md#core-assertion)**, the key points you'll be tested on, from _your_ summary and answers, never from the book. You keep, drop (`d`) or rewrite each one.
 4. It suggests **[buzzwords](glossary.md#buzzword)** you won't be allowed to hide behind.
-5. It picks **quotes** from your highlights, and the vault server checks they really are in the book.
+5. It picks **quotes** from your highlights and bolds, or from the quotes you kept while reading with `coach read`, and the vault server checks they really are in the book.
 6. You see a preview. The [concept note](glossary.md#concept-note) is written to `3.Resources/Concepts/` only if you say yes.
 
 ## 3. Spar: explain it
@@ -85,7 +85,7 @@ A new concept note is due the day after you made it, marked "first review" in `c
 
 ## 7. Climb the rest of the way
 
-Sparring and coming back after a gap are two of the seven steps of the [climb](glossary.md#climb). The others each have a command, and `coach climb` shows where each idea stands:
+Sparring and coming back after a gap are two of the seven steps of the [climb](glossary.md#climb). The others each have a command, and `coach climb` shows where each idea stands. [The climb](the-climb.md) explains every step, what counts as done, and how sparring and the judge fit in:
 
 ```sh
 npm run coach -- read "Building a Second Brain"     # read a chapter and note what resonates
@@ -102,5 +102,6 @@ The rules that decide a verdict live in code, not in prompts. A model saying "pa
 
 ## Next
 
+- [The climb](the-climb.md) takes each idea from familiar to mastered.
 - [Commands](commands.md) lists everything else the coach can do.
 - [Configuration](configuration.md) tunes the rules to how you learn.

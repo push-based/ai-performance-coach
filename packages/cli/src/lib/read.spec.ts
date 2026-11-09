@@ -85,6 +85,7 @@ describe('coach read', () => {
     expect(text).toContain(PAGE_1);
     expect(text).toContain('That copies the page');
     expect(text).toContain('This completes Read');
+    expect(text).toMatch(/Next: bold and highlight .* coach synthesize "/);
     expect(log.notes.filter((n) => n.execute)).toEqual([
       {
         input: {

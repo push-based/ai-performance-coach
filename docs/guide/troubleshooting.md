@@ -15,13 +15,15 @@ Find the message you see, then try the fix next to it. Messages are shortened; `
 
 ## Sparring and synthesizing
 
-| You see                                                           | Try                                                                                 |
-| ----------------------------------------------------------------- | ----------------------------------------------------------------------------------- |
-| `This note needs about N tokens, but Gemma's context window is …` | Raise `ollama.contextWindow`, or spar a shorter note.                               |
-| `only notes under 3.Resources can be sparred`                     | File the note into Resources first: `coach file <note> 3.Resources/<topic>`.        |
-| `… is raw material: spar a concept note that quotes it instead`   | Book chapters are source material. Run `coach synthesize` to make a concept note.   |
-| `Nothing marked in … yet`                                         | Bold or highlight some passages, or write a chapter summary, then synthesize again. |
-| `A concept note needs at least one core assertion`                | Keep at least one of the drafted assertions, or type your own.                      |
+| You see                                                           | Try                                                                                                  |
+| ----------------------------------------------------------------- | ---------------------------------------------------------------------------------------------------- |
+| `This note needs about N tokens, but Gemma's context window is …` | Raise `ollama.contextWindow`, or spar a shorter note.                                                |
+| `only notes under 3.Resources can be sparred`                     | File the note into Resources first: `coach file <note> 3.Resources/<topic>`.                         |
+| `… is raw material: spar a concept note that quotes it instead`   | Book chapters are source material. Run `coach synthesize` to make a concept note.                    |
+| `Nothing marked in … yet`                                         | Read a chapter with `coach read`, or bold and highlight passages in Obsidian, then synthesize again. |
+| `No converted book matches …`                                     | Use a title from the list the message gives, or the book's folder.                                   |
+| `The judge failed the latest round on this concept`               | Run `coach study` on the note, then spar it and pass again before `coach teach`.                     |
+| `A concept note needs at least one core assertion`                | Keep at least one of the drafted assertions, or type your own.                                       |
 
 ## The judge
 

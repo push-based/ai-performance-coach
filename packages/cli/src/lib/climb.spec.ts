@@ -1,5 +1,5 @@
 import { stripVTControlCharacters } from 'node:util';
-import type { ConceptClimb } from '@ai-coach/application';
+import type { ClimbStatus } from '@ai-coach/application';
 import { CLIMB_STEPS, type ClimbStep, type ClimbSteps } from '@ai-coach/domain';
 import { climb } from './climb.js';
 import type { Coach } from './composition.js';
@@ -29,7 +29,7 @@ function steps(...done: ClimbStep[]): ClimbSteps {
   ) as ClimbSteps;
 }
 
-function tokens(overrides: Partial<ConceptClimb> = {}): ConceptClimb {
+function tokens(overrides: Partial<ClimbStatus> = {}): ClimbStatus {
   return {
     path: TOKENS,
     title: 'Design tokens',
@@ -40,11 +40,12 @@ function tokens(overrides: Partial<ConceptClimb> = {}): ConceptClimb {
     skipped: [],
     spacedPass: null,
     teach: { ok: false, reason: 'Teach needs a passed spaced review' },
+    waitingForJudge: false,
     ...overrides,
   };
 }
 
-function coachWith(climbs: ConceptClimb[], asked: string[] = []): Coach {
+function coachWith(climbs: ClimbStatus[], asked: string[] = []): Coach {
   return {
     climbing: () => ({
       concept: async (ref: string) => {
@@ -143,6 +144,16 @@ describe('coach climb', () => {
     const term = new ScriptedTerminal();
     await climb(coachWith([]), term, []);
     expect(term.text()).toContain('coach synthesize');
+  });
+});
+
+describe('coach climb and the judge', () => {
+  it('says when a round waits for the judge', async () => {
+    const term = new ScriptedTerminal();
+    await climb(coachWith([tokens({ waitingForJudge: true })]), term, []);
+    expect(term.text()).toContain(
+      'next: elaborate · a round waits for the judge: `coach judge`',
+    );
   });
 });
 

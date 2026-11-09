@@ -14,7 +14,13 @@ import {
   UnavailableError,
   UnusableReplyError,
 } from '../errors.js';
-import { notePath, referenceOf, tier2History } from '../history.js';
+import {
+  JUDGE_FAILED,
+  judgeFailedLatest,
+  notePath,
+  referenceOf,
+  tier2History,
+} from '../history.js';
 import type { GuidelineCheck, Library } from '../ports/library.js';
 import type { SparringPartner, TeachPartner } from '../ports/models.js';
 import type { Clock } from '../ports/state.js';
@@ -169,6 +175,7 @@ export class Teaching {
         climb?.teach.reason ??
           'Teach needs a passed spaced review: spar it again after a gap first',
       );
+    if (judgeFailedLatest(note)) throw new NotSparrableError(JUDGE_FAILED);
     return new TeachSession(this.deps, note, await this.misconception(note));
   }
 

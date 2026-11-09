@@ -141,4 +141,5 @@ export async function group(
   }
   const done = await session.record(plan);
   term.print(paint('green', `Wrote ${done.path}.`));
+  term.print(paint('dim', 'See the climb: coach climb'));
 }

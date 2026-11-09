@@ -11,6 +11,14 @@ export interface Mark {
 
 export type MaterialKind = MarkKind | 'note';
 
+export interface NoteMark {
+  kind: MaterialKind;
+  text: string;
+  page: number | null;
+  within?: string;
+  source?: string;
+}
+
 export interface MaterialItem {
   id: number;
   kind: MaterialKind;
@@ -41,6 +49,7 @@ export const MAX_BUZZWORDS = 5;
 export const MAX_PASSAGES = 12;
 export const MIN_QUOTE = 12;
 export const MIN_QUOTE_WORDS = 5;
+export const MAX_NOTE_CHARS = 800;
 export const WHY_IT_MATTERS =
   'Why does this idea matter: what problem does it solve, or what goes wrong without it?';
 
@@ -49,6 +58,16 @@ const HIGHLIGHT = /==(?=\S)(?:(?!\n[ \t]*\n)[\s\S])*?\S==/g;
 const BOLD = /(\*\*|__)(?=\S)(?:(?!\n[ \t]*\n)[\s\S])*?\S\1/g;
 const BOLD_RUN = /(\*\*|__)[ \t]*\n[ \t]*\1/g;
 const HIGHLIGHT_RUN = /==[ \t]*\n[ \t]*==/g;
+const FRONT = /^---\n[\s\S]*?\n---\n?/;
+const HEADING = /^#{1,6}[ \t]+(.*?)[ \t]*$/;
+const PAGE_TITLE = /^Page (\d+)$/;
+const BULLET = /^[ \t]*[-*+][ \t]+(.+)$/;
+const DATED = /^\d{4}-\d{2}-\d{2}[ \t]*·[ \t]*/;
+const LINKED =
+  /[ \t]+[—–-][ \t]+\[\[([^\]|#]+)(?:#[^\]|]*)?(?:\|[^\]]*)?\]\][ \t]*$/;
+const KEPT = /^[“"](.+)[”"](?:[ \t]*\(quote\))?$/;
+const ORIGIN = /^From \[\[[^\]]*\]\]\.?$/;
+const LINK = /\[\[([^\]|]+)(?:\|([^\]]*))?\]\]/g;
 
 function clean(text: string): string {
   return text
@@ -129,6 +148,80 @@ export function extractMarks(body: string): Mark[] {
   });
 }
 
+function plain(text: string): string {
+  return clean(
+    text.replace(LINK, (_, target: string, label?: string) => label ?? target),
+  );
+}
+
+function sourcePath(target: string): string {
+  const path = target.trim();
+  return path.endsWith('.md') ? path : `${path}.md`;
+}
+
+function withNote(
+  marks: readonly Mark[],
+  text: string,
+  page: number | null,
+  source?: string,
+): NoteMark[] {
+  const from = source ? { source } : {};
+  const items: NoteMark[] = marks.map((m) => ({ ...m, ...from }));
+  const note = plain(text).slice(0, MAX_NOTE_CHARS);
+  if (note && !marks.some((m) => m.text === note))
+    items.push({ kind: 'note', text: note, page, ...from });
+  return items;
+}
+
+function bulletItems(line: string, page: number | null): NoteMark[] {
+  const linked = LINKED.exec(line);
+  const source = linked ? sourcePath(linked[1]!) : undefined;
+  const text = (linked ? line.slice(0, linked.index) : line)
+    .replace(DATED, '')
+    .trim();
+  const kept = KEPT.exec(text);
+  if (!kept) return withNote(marksOn(text, page), text, page, source);
+  const quote = clean(kept[1]!);
+  return quote
+    ? [{ kind: 'highlight', text: quote, page, ...(source ? { source } : {}) }]
+    : [];
+}
+
+function paragraphItems(text: string, page: number | null): NoteMark[] {
+  if (ORIGIN.test(text.trim())) return [];
+  const marks = marksOn(text, page);
+  return text.trimStart().startsWith('>') ? marks : withNote(marks, text, page);
+}
+
+export function extractNoteItems(body: string): NoteMark[] {
+  const items: NoteMark[] = [];
+  let page: number | null = null;
+  let block: string[] = [];
+  const flush = () => {
+    if (block.length) items.push(...paragraphItems(block.join('\n'), page));
+    block = [];
+  };
+  for (const line of body.replace(FRONT, '').split('\n')) {
+    const heading = HEADING.exec(line);
+    const bullet = BULLET.exec(line);
+    if (heading) {
+      flush();
+      const numbered = PAGE_TITLE.exec(heading[1]!);
+      page = numbered ? Number(numbered[1]) : null;
+    } else if (bullet) {
+      flush();
+      items.push(...bulletItems(bullet[1]!, page));
+    } else if (!line.trim()) flush();
+    else block.push(line);
+  }
+  flush();
+  return items.filter((i) => i.text);
+}
+
+export function quotable(text: string): boolean {
+  return text.length >= MIN_QUOTE && wordCount(text) >= MIN_QUOTE_WORDS;
+}
+
 export function quotesFrom(
   items: readonly MaterialItem[],
 ): ConceptPassageDraft[] {
@@ -142,8 +235,7 @@ export function quotesFrom(
   const quotes: ConceptPassageDraft[] = [];
   for (const item of ranked) {
     const key = item.text.toLowerCase();
-    if (item.text.length < MIN_QUOTE || wordCount(item.text) < MIN_QUOTE_WORDS)
-      continue;
+    if (!quotable(item.text)) continue;
     if (kept.some((k) => k.includes(key))) continue;
     kept.push(key);
     quotes.push({
