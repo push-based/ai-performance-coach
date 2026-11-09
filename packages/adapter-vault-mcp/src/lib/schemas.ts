@@ -34,7 +34,14 @@ export type InvalidSession = z.infer<typeof InvalidSession>;
 
 export const ListNotesResult = z.object({
   total: z.number(),
-  counts: z.record(BucketFilter, z.number()),
+  counts: z
+    .record(z.string(), z.number())
+    .transform(
+      (counts) =>
+        Object.fromEntries(
+          BucketFilter.options.map((bucket) => [bucket, counts[bucket] ?? 0]),
+        ) as Record<BucketFilter, number>,
+    ),
   notes: z.array(
     z.object({
       path: z.string(),
