@@ -1,4 +1,5 @@
 import type {
+  ClimbDates,
   CoachingStyle,
   Mastery,
   ParaBucket,
@@ -58,6 +59,7 @@ export interface NoteDetails extends NoteSummary {
   chapter: BookChapter | null;
   concept: ConceptDetails | null;
   style: CoachingStyle | null;
+  climb: ClimbDates;
 }
 
 export interface InvalidSession {

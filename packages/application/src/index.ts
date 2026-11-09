@@ -10,3 +10,4 @@ export * from './lib/sparring/sparring.js';
 export * from './lib/studying/studying.js';
 export * from './lib/synthesizing/synthesizing.js';
 export * from './lib/ports/library.js';
+export * from './lib/climbing/climbing.js';

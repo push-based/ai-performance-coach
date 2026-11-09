@@ -6,18 +6,19 @@ If you want to change _how the coach behaves_ (how many follow-ups it allows, wh
 
 ## What's inside
 
-| Area                    | What it decides                                                                                                                    | File                |
-| ----------------------- | ---------------------------------------------------------------------------------------------------------------------------------- | ------------------- |
-| **Sparring rules**      | The tunable knobs: banned buzzwords, follow-ups, rephrases, how many copied words count as reciting, the coaching style, language. | `sparring-rules.ts` |
-| **A sparring round**    | One Tier 1 conversation: the challenge, rephrase requests, follow-ups and the verdict. A fail must name the gaps.                  | `sparring-round.ts` |
-| **Coaching styles**     | The four styles (feynman, socratic, cornell, devil), what each asks for, and spotting "teach me"-style requests for help.          | `coaching-style.ts` |
-| **Text checks**         | Finding buzzwords, and noticing when an answer or question copies the note word for word.                                          | `text.ts`           |
-| **The judge's verdict** | A Tier 2 pass stands only if no claim is wrong or hand-waved and no gap remains, whatever the model said.                          | `judgement.ts`      |
-| **What the judge sees** | The exact shape of what may go online: questions, answers and (optionally) core assertions. Nothing else gets through.             | `tier2-payload.ts`  |
-| **The review schedule** | When an idea comes back: tomorrow after a fail, in 3 days after a Tier 1 pass, then 7 → 14 → 30 → … → 365 days on Tier 2 passes.   | `review-ladder.ts`  |
-| **A study round**       | Working through the gaps of a failed round: tries per gap, hints, and finding the author's passage that answers a gap.             | `study-round.ts`    |
-| **Synthesizing**        | Reading your bolds, highlights and summaries out of a chapter, picking quotes, and checking a concept note before it's written.    | `synthesis.ts`      |
-| **Vocabulary**          | Shared words: verdicts, tiers, mastery levels, PARA folders, a note, an exchange.                                                  | `vocabulary.ts`     |
+| Area                    | What it decides                                                                                                                                    | File                |
+| ----------------------- | -------------------------------------------------------------------------------------------------------------------------------------------------- | ------------------- |
+| **Sparring rules**      | The tunable knobs: banned buzzwords, follow-ups, rephrases, how many copied words count as reciting, the coaching style, language.                 | `sparring-rules.ts` |
+| **A sparring round**    | One Tier 1 conversation: the challenge, rephrase requests, follow-ups and the verdict. A fail must name the gaps.                                  | `sparring-round.ts` |
+| **Coaching styles**     | The four styles (feynman, socratic, cornell, devil), what each asks for, and spotting "teach me"-style requests for help.                          | `coaching-style.ts` |
+| **Text checks**         | Finding buzzwords, and noticing when an answer or question copies the note word for word.                                                          | `text.ts`           |
+| **The judge's verdict** | A Tier 2 pass stands only if no claim is wrong or hand-waved and no gap remains, whatever the model said.                                          | `judgement.ts`      |
+| **What the judge sees** | The exact shape of what may go online: questions, answers and (optionally) core assertions. Nothing else gets through.                             | `tier2-payload.ts`  |
+| **The review schedule** | When an idea comes back: tomorrow after a fail, in 3 days after a Tier 1 pass, then 7 → 14 → 30 → … → 365 days on Tier 2 passes.                   | `review-ladder.ts`  |
+| **A study round**       | Working through the gaps of a failed round: tries per gap, hints, and finding the author's passage that answers a gap.                             | `study-round.ts`    |
+| **Synthesizing**        | Reading your bolds, highlights and summaries out of a chapter, picking quotes, and checking a concept note before it's written.                    | `synthesis.ts`      |
+| **The climb**           | The seven learning steps on a concept note, which are done and on what evidence, what comes next, and that Teach waits for a passed spaced review. | `climb.ts`          |
+| **Vocabulary**          | Shared words: verdicts, tiers, mastery levels, PARA folders, a note, an exchange.                                                                  | `vocabulary.ts`     |
 
 ## Using it
 

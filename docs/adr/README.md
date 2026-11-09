@@ -40,3 +40,4 @@ Every important or major change to ai-coach ships with an ADR in this folder; AD
 | [0034](0034-split-the-docs-into-a-short-readme-a-guide-and-contributing.md)       | Split the docs into a short README, a user guide and a contributing guide                        | proposed               |
 | [0035](0035-keep-day-plans-in-a-folder-per-month.md)                              | Keep day plans in a folder per month                                                             | proposed               |
 | [0036](0036-fix-ticked-tasks-with-update-task-and-place-tasks-by-heading-path.md) | Fix ticked tasks with update_task, and place tasks by heading path                               | proposed               |
+| [0037](0037-track-the-climb-of-seven-learning-steps-per-concept.md)               | Track the climb of seven learning steps on each concept note                                     | proposed               |

@@ -6,6 +6,10 @@ The words ai-coach uses, in plain language.
 
 A word you may not hide behind when you explain an idea, such as "synergy" or "best practice". The coach asks you to rephrase when you use one. You set them per concept note, and globally with [`sparring.buzzwords`](configuration.md#settings).
 
+## Climb
+
+The seven steps from feeling you understand an idea to mastering it: **Read**, **Group**, **Generate**, **Retrieve**, **Elaborate**, **Space** and **Teach**. Each is harder than the last, and in each you do the work, not the model. `coach climb` shows which steps you've done on each [concept note](#concept-note). Retrieve is a [spar](#spar) session; Space is a spar session at least a day after the one before. Teach opens only after you pass such a spaced review.
+
 ## Coaching style
 
 How the coach pushes you: `feynman`, `socratic`, `cornell` or `devil`. See [Coaching styles](coaching-styles.md).

@@ -1,5 +1,6 @@
 import {
   PARA_BUCKETS,
+  type ClimbDates,
   type ConceptDraft,
   type Exchange,
   type MaterialItem,
@@ -78,6 +79,7 @@ interface StoredNote {
   chapter: BookChapter | null;
   concept: ConceptDetails | null;
   style: CoachingStyle | null;
+  climb: ClimbDates;
 }
 
 interface StoredSession {
@@ -112,6 +114,7 @@ export class InMemoryVault implements NotesRepository, SessionLog, VaultFiling {
       style?: CoachingStyle;
       concept?: ConceptDetails;
       raw?: boolean;
+      climb?: ClimbDates;
     } = {
       rawRole: null,
     },
@@ -127,6 +130,7 @@ export class InMemoryVault implements NotesRepository, SessionLog, VaultFiling {
       chapter: raw.chapter ?? null,
       concept: raw.concept ?? null,
       style: raw.style ?? null,
+      climb: raw.climb ?? {},
     });
   }
 
@@ -202,6 +206,7 @@ export class InMemoryVault implements NotesRepository, SessionLog, VaultFiling {
       chapter: note.chapter,
       concept: note.concept,
       style: note.style,
+      climb: note.climb,
     };
   }
 

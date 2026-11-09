@@ -9,3 +9,4 @@ export * from './lib/vocabulary.js';
 export * from './lib/study-round.js';
 export * from './lib/coaching-style.js';
 export * from './lib/synthesis.js';
+export * from './lib/climb.js';
