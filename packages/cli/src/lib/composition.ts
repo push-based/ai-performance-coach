@@ -11,6 +11,7 @@ import {
 } from '@ai-coach/adapter-ollama';
 import { McpVault } from '@ai-coach/adapter-vault-mcp';
 import {
+  Climbing,
   Synthesizing,
   Filing,
   Judging,
@@ -34,6 +35,7 @@ export interface Coach {
   judging(): Judging;
   studying(): Studying;
   synthesizing(): Synthesizing;
+  climbing(): Climbing;
   close(): Promise<void>;
 }
 
@@ -111,6 +113,7 @@ export async function composeCoach(
         ladder: config.ladder,
         includeAssertions: config.judge.includeAssertions,
       }),
+    climbing: () => new Climbing(vault),
     close: () => vault.close(),
   };
 }

@@ -19,6 +19,7 @@ import {
   type VaultFiling,
 } from '@ai-coach/application';
 import {
+  climbDates,
   isCoachingStyle,
   tier2Payload,
   type ConceptDraft,
@@ -96,6 +97,7 @@ function details(note: ReadNoteResult): NoteDetails {
     style: isCoachingStyle(note.frontmatter['style'])
       ? note.frontmatter['style']
       : null,
+    climb: climbDates(note.frontmatter['climb']),
     sessions: note.history.entries.map((e) => ({
       sessionId: e.session_id,
       tier: e.tier,
