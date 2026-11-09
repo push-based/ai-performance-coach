@@ -7,7 +7,6 @@ import {
   type SparringRules,
 } from '@ai-coach/domain';
 import {
-  NotFoundError,
   NotSparrableError,
   UnavailableError,
   UnusableReplyError,
@@ -19,6 +18,7 @@ import type {
   StructurePartner,
 } from '../ports/library.js';
 import type { NotesRepository } from '../ports/vault.js';
+import { findBook } from '../books.js';
 
 export interface GroupingDeps {
   notes: NotesRepository;
@@ -125,19 +125,7 @@ export class Grouping {
   }
 
   async open(book: string): Promise<GroupSession> {
-    const wanted = book.trim().toLowerCase();
-    const found = (await this.deps.library.readingProgress()).filter(
-      (b) =>
-        b.title.toLowerCase() === wanted ||
-        b.folder === book ||
-        b.index === book,
-    );
-    if (!found.length) throw new NotFoundError(`No book matches "${book}"`);
-    if (found.length > 1)
-      throw new NotFoundError(
-        `"${book}" matches ${found.length} books: ${found.map((b) => b.title).join(', ')}`,
-      );
-    const progress = found[0]!;
+    const progress = await findBook(this.deps.library, book);
     const { notes } = await this.deps.notes.listNotes({ bucket: 'resources' });
     const titles = new Map(notes.map((n) => [n.path, n.title]));
     const concepts = (progress.concepts ?? []).map((path) => ({

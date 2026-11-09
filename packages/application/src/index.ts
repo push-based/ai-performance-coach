@@ -14,3 +14,5 @@ export * from './lib/climbing/climbing.js';
 export * from './lib/generating/generating.js';
 export * from './lib/elaborating/elaborating.js';
 export * from './lib/grouping/grouping.js';
+export * from './lib/reading/reading.js';
+export * from './lib/books.js';

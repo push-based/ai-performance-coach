@@ -42,8 +42,11 @@ import type {
   IdeaProposal,
   Library,
   PassageHit,
+  ReadingNotesCheck,
+  ReadingNotesInput,
   StructureCheck,
   StructureInput,
+  SummaryCheck,
   StructurePartner,
   StructureQuestionRequest,
 } from '../lib/ports/library.js';
@@ -533,11 +536,45 @@ export class InMemoryLibrary implements Library {
     readonly hits: PassageHit[] = [],
   ) {}
 
+  readonly readingNotes: { input: ReadingNotesInput; execute: boolean }[] = [];
+  readonly summaries: { chapter: string; text: string; execute: boolean }[] =
+    [];
   readonly structures: { input: StructureInput; execute: boolean }[] = [];
   readonly structureWarnings: string[] = [];
 
   async readingProgress(book?: string): Promise<BookProgress[]> {
     return this.books.filter((b) => !book || b.folder === book);
+  }
+
+  async addReadingNotes(
+    input: ReadingNotesInput,
+    execute: boolean,
+    versions?: Record<string, string>,
+  ): Promise<ReadingNotesCheck> {
+    this.readingNotes.push({ input: structuredClone(input), execute });
+    if (execute && !versions)
+      throw new VaultRefusedError('add_reading_notes: versions missing');
+    const body = this.vault.notes.get(input.chapter)?.body ?? '';
+    return {
+      path: `3.Resources/Reading notes/${input.chapter.split('/').pop()}`,
+      entries: input.notes.map((text) => ({
+        text,
+        quote: body.toLowerCase().includes(text.toLowerCase()),
+      })),
+      warnings: [],
+      climbs: [],
+      versions: { 'reading.md': `v${this.readingNotes.length}` },
+      executed: execute,
+    };
+  }
+
+  async writeSummary(
+    chapter: string,
+    text: string,
+    execute: boolean,
+  ): Promise<SummaryCheck> {
+    this.summaries.push({ chapter, text, execute });
+    return { warnings: [], executed: execute };
   }
 
   async writeStructure(

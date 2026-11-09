@@ -36,6 +36,12 @@ function coachWith(
         createConcept: async () => {
           throw new Error('not used');
         },
+        addReadingNotes: async () => {
+          throw new Error('not used');
+        },
+        writeSummary: async () => {
+          throw new Error('not used');
+        },
         writeStructure: async (input: StructureInput, execute: boolean) => {
           written.push({ input, execute });
           return {
