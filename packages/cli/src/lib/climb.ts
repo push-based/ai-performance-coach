@@ -1,7 +1,8 @@
 import type { ConceptClimb } from '@ai-coach/application';
 import { CLIMB_STEPS, type ClimbStep } from '@ai-coach/domain';
 import type { Coach } from './composition.js';
-import { paint, type Terminal } from './terminal.js';
+import type { CommandOptions } from './commands.js';
+import { confirm, paint, type Terminal } from './terminal.js';
 
 const LABEL: Record<ClimbStep, string> = {
   read: 'Read',
@@ -47,16 +48,35 @@ export function stairs(c: ConceptClimb, width = TITLE_WIDTH): string[] {
     ...(c.current
       ? []
       : [
-          `${indent}${paint('yellow', 'the climb: summary in the note does not match its evidence; the vault tool rebuild_climb fixes it')}`,
+          `${indent}${paint('yellow', 'the climb: summary in the note does not match its evidence; coach climb --rebuild fixes it')}`,
         ]),
   ];
+}
+
+async function rebuild(coach: Coach, term: Terminal): Promise<void> {
+  const climbing = coach.climbing();
+  const preview = await climbing.previewRebuild();
+  if (!preview.climbs.length) {
+    term.print('Every climb: summary already matches its evidence.');
+    return;
+  }
+  term.print('These climb: summaries will be set to what the evidence shows:');
+  for (const path of preview.climbs) term.print(`  ${path}`);
+  if (!(await confirm(term, 'Rebuild them?', true))) {
+    term.print('Nothing was changed.');
+    return;
+  }
+  const done = await climbing.rebuild(preview);
+  term.print(paint('green', `Rebuilt ${done.climbs.length} climb summaries.`));
 }
 
 export async function climb(
   coach: Coach,
   term: Terminal,
   args: string[],
+  options: CommandOptions = {},
 ): Promise<void> {
+  if (options.rebuild) return rebuild(coach, term);
   const climbing = coach.climbing();
   const climbs = args.length
     ? await Promise.all(args.map((ref) => climbing.concept(ref)))

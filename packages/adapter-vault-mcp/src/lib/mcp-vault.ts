@@ -4,6 +4,7 @@ import {
   VaultRefusedError,
   type BookChapter,
   type BookProgress,
+  type ClimbRebuild,
   type ConceptClimb,
   type ConceptCheck,
   type DueReport,
@@ -144,6 +145,20 @@ export class McpVault
       counts: result.counts,
       notes: result.notes,
       invalidSessions: result.invalidSessions,
+    };
+  }
+
+  async rebuildClimb(
+    execute: boolean,
+    versions?: Record<string, string>,
+  ): Promise<ClimbRebuild> {
+    const result = await this.client
+      .rebuildClimb({ execute, ...(versions ? { versions } : {}) })
+      .catch(translate);
+    return {
+      climbs: result.climbs.map((c) => c.path),
+      versions: result.versions,
+      executed: result.executed,
     };
   }
 

@@ -1,5 +1,9 @@
 import { resourcesByCoachId } from '../history.js';
-import type { ConceptClimb, NotesRepository } from '../ports/vault.js';
+import type {
+  ClimbRebuild,
+  ConceptClimb,
+  NotesRepository,
+} from '../ports/vault.js';
 
 export class Climbing {
   constructor(private readonly notes: NotesRepository) {}
@@ -10,6 +14,14 @@ export class Climbing {
       : ((await resourcesByCoachId(this.notes)).get(ref) ?? ref);
     const [climb] = await this.notes.climb(note);
     return climb!;
+  }
+
+  previewRebuild(): Promise<ClimbRebuild> {
+    return this.notes.rebuildClimb(false);
+  }
+
+  rebuild(preview: ClimbRebuild): Promise<ClimbRebuild> {
+    return this.notes.rebuildClimb(true, preview.versions);
   }
 
   async concepts(): Promise<ConceptClimb[]> {

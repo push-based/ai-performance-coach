@@ -147,6 +147,7 @@ async function pick(
 export interface CommandOptions {
   style?: CoachingStyle;
   freeRecall?: boolean;
+  rebuild?: boolean;
 }
 
 export async function spar(

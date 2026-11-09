@@ -56,6 +56,7 @@ import type {
   PendingSession,
 } from '../lib/ports/state.js';
 import type {
+  ClimbRebuild,
   ConceptClimb,
   DueReport,
   PracticeDraft,
@@ -257,6 +258,20 @@ export class InMemoryVault implements NotesRepository, SessionLog, VaultFiling {
       warnings: [],
       items: items.map((n) => ({ notePath: n.path, coachId: n.coachId })),
     };
+  }
+
+  readonly rebuilds: boolean[] = [];
+
+  async rebuildClimb(
+    execute: boolean,
+    versions?: Record<string, string>,
+  ): Promise<ClimbRebuild> {
+    this.rebuilds.push(execute);
+    if (execute && !versions)
+      throw new VaultRefusedError('rebuild_climb: versions missing');
+    const stale = this.climbs.filter((c) => !c.current).map((c) => c.path);
+    if (execute) for (const c of this.climbs) c.current = true;
+    return { climbs: stale, versions: { stale: 'v1' }, executed: execute };
   }
 
   async climb(note?: string): Promise<ConceptClimb[]> {

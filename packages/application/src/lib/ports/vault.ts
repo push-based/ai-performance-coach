@@ -110,6 +110,12 @@ export interface ConceptClimb {
   teach: { ok: boolean; reason?: string };
 }
 
+export interface ClimbRebuild {
+  climbs: string[];
+  versions: Record<string, string>;
+  executed: boolean;
+}
+
 export interface NotesRepository {
   listNotes(filter?: {
     bucket?: ParaBucket | 'out_of_place';
@@ -117,6 +123,10 @@ export interface NotesRepository {
   readNote(path: string): Promise<NoteDetails>;
   dueForReview(today: string): Promise<DueReport>;
   climb(note?: string): Promise<ConceptClimb[]>;
+  rebuildClimb(
+    execute: boolean,
+    versions?: Record<string, string>,
+  ): Promise<ClimbRebuild>;
 }
 
 export type NoteRef = { path: string } | { coachId: string };
