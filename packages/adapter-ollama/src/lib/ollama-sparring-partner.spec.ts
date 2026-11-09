@@ -300,6 +300,38 @@ describe('OllamaSparringPartner', () => {
     });
   });
 
+  it('scores a free recall per assertion, keeping only those the learner said, on the check model or Gemma', async () => {
+    const recall = {
+      note: NOTE,
+      rules,
+      style: 'feynman' as const,
+      assertions: ['Microtasks drain first.', 'Timers wait for the queue.'],
+      exchanges: [
+        { question: 'Recall?', answer: 'Microtasks run first, always.' },
+      ],
+    };
+    replies.push(
+      { evidence: 'Microtasks run first, always.', covered: true },
+      { evidence: 'Timers wait for the queue.', covered: true },
+    );
+    const checked = new OllamaSparringPartner({ model: 'g', host }, 'big');
+    expect(await checked.coveredAssertions(recall)).toEqual([
+      'Microtasks drain first.',
+    ]);
+    expect(sent.map((r) => r.model)).toEqual(['big', 'big']);
+    expect(text(0)).not.toContain('NOTE-BODY-MARKER');
+
+    sent.length = 0;
+    replies.push(
+      { evidence: 'Microtasks run first, always.', covered: false },
+      'maybe',
+      'maybe',
+    );
+    const plain = new OllamaSparringPartner({ model: 'g', host });
+    expect(await plain.coveredAssertions(recall)).toEqual([]);
+    expect(new Set(sent.map((r) => r.model))).toEqual(new Set(['g']));
+  });
+
   it('keeps the gap check when no check model is set or the note has no assertions', async () => {
     const partner = new OllamaSparringPartner({ model: 'g', host }, 'big');
     replies.push(

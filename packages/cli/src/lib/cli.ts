@@ -45,7 +45,9 @@ export const USAGE = `coach: a Socratic sparring partner for your notes
   coach init                  bring the vault onto the five PARA folders
   coach view                  open the vault graph in the browser
 
-Options: --style feynman|socratic|cornell|devil, --config <file>, --today YYYY-MM-DD, --help
+Options: --style feynman|socratic|cornell|devil, --free-recall, --config <file>, --today YYYY-MM-DD, --help
+
+--free-recall opens spar on a concept note by asking you to write down everything you remember, then asks only about what you missed.
 
 Styles: feynman (plain words, no jargon), socratic (counter-examples), cornell (the author's thesis and argument), devil (failure modes and trade-offs).
 Without --style, a note's style: frontmatter, then sparring.style in the config, then automatic choice.`;
@@ -99,6 +101,7 @@ export async function run(argv: string[], deps: CliDeps): Promise<number> {
         config: { type: 'string' },
         today: { type: 'string' },
         style: { type: 'string' },
+        'free-recall': { type: 'boolean' },
         help: { type: 'boolean', short: 'h' },
       },
     });
@@ -139,7 +142,10 @@ export async function run(argv: string[], deps: CliDeps): Promise<number> {
       return 0;
     }
     coach = await composeCoach(config, today, deps);
-    await handler(coach, term, args, { style });
+    await handler(coach, term, args, {
+      style,
+      freeRecall: parsed.values['free-recall'],
+    });
     return 0;
   } catch (err) {
     term.print(

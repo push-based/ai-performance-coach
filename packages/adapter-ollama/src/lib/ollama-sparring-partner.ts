@@ -3,6 +3,7 @@ import {
   type ChallengeRequest,
   type NextTurn,
   type NextTurnRequest,
+  type RecallCheckRequest,
   type OpeningChallenge,
   type SparringPartner,
 } from '@ai-coach/application';
@@ -88,7 +89,8 @@ export class OllamaSparringPartner implements SparringPartner {
       return { action: 'probe', question: reply.question };
     }
     if (this.checker && request.assertions.length) {
-      const missed = await this.missedAssertions(this.checker, request);
+      const covered = await this.assertionsCovered(this.checker, request);
+      const missed = request.assertions.filter((a) => !covered.includes(a));
       return {
         action: 'conclude',
         verdict: missed.length ? 'fail' : 'pass',
@@ -135,12 +137,16 @@ export class OllamaSparringPartner implements SparringPartner {
     }
   }
 
-  private async missedAssertions(
+  coveredAssertions(request: RecallCheckRequest): Promise<string[]> {
+    return this.assertionsCovered(this.checker ?? this.client, request);
+  }
+
+  private async assertionsCovered(
     checker: OllamaClient,
-    request: NextTurnRequest,
+    request: Pick<RecallCheckRequest, 'assertions' | 'exchanges'>,
   ): Promise<string[]> {
     const answers = request.exchanges.map((e) => e.answer);
-    const missed: string[] = [];
+    const covered: string[] = [];
     for (const assertion of request.assertions) {
       try {
         const check = await checker.json(
@@ -148,13 +154,13 @@ export class OllamaSparringPartner implements SparringPartner {
           AssertionCheck,
           { temperature: 0 },
         );
-        if (check.covered && saidIn(answers, check.evidence)) continue;
+        if (check.covered && saidIn(answers, check.evidence))
+          covered.push(assertion);
       } catch (err) {
         if (!(err instanceof UnusableReplyError)) throw err;
       }
-      missed.push(assertion);
     }
-    return missed;
+    return covered;
   }
 
   private async focus(request: ChallengeRequest): Promise<string> {

@@ -146,6 +146,7 @@ async function pick(
 
 export interface CommandOptions {
   style?: CoachingStyle;
+  freeRecall?: boolean;
 }
 
 export async function spar(
@@ -168,7 +169,9 @@ export async function spar(
   notes: for (const path of paths) {
     let opened;
     try {
-      opened = await sparring.open(path, options.style);
+      opened = await sparring.open(path, options.style, {
+        freeRecall: options.freeRecall,
+      });
     } catch (err) {
       if (!(err instanceof NotSparrableError)) throw err;
       term.print(paint('red', `Skipping ${err.message}`));

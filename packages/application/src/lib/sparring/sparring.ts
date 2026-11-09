@@ -21,7 +21,10 @@ import type {
   SessionDraft,
   SessionLog,
 } from '../ports/vault.js';
-import { SparringConversation } from './conversation.js';
+import {
+  SparringConversation,
+  type ConversationOptions,
+} from './conversation.js';
 
 export interface SparringCandidate {
   path: string;
@@ -86,6 +89,7 @@ export class Sparring {
   async open(
     path: string,
     style?: CoachingStyle,
+    options: ConversationOptions = {},
   ): Promise<{ note: NoteDetails; conversation: SparringConversation }> {
     const note = await this.deps.notes.readNote(path);
     if (note.bucket !== 'resources') {
@@ -105,6 +109,7 @@ export class Sparring {
         referenceOf(note),
         this.deps.rules,
         await resolveStyle(note, this.deps.rules, this.deps.classifier, style),
+        options,
       ),
     };
   }
