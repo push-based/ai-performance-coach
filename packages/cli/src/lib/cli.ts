@@ -28,6 +28,7 @@ import {
 import { synthesize } from './synthesize.js';
 import { climb } from './climb.js';
 import { generate } from './generate.js';
+import { elaborate } from './elaborate.js';
 import { ConfigError, loadConfig } from './config.js';
 import { paint, type Terminal } from './terminal.js';
 
@@ -41,6 +42,7 @@ export const USAGE = `coach: a Socratic sparring partner for your notes
   coach synthesize [book]     turn your marks and reading notes on a book into concept notes
   coach climb [note ...]      the seven learning steps done on each concept note, and the next one
   coach generate <note>       guess a concept, or a chapter before reading it, then check and correct the guess
+  coach elaborate <note>      say why a concept matters, what it connects to, and where you would use it
   coach file <note> <folder>  move a note into a PARA folder (shows a preview first)
   coach capture <title>       write a new note into 0.Inbox
   coach archive <project>     move a project from 1.Projects into 4.Archive
@@ -77,6 +79,7 @@ const COMMANDS: Record<
   synthesize,
   climb,
   generate,
+  elaborate,
   file,
   capture,
   archive,

@@ -44,3 +44,4 @@ Every important or major change to ai-coach ships with an ADR in this folder; AD
 | [0038](0038-review-a-new-idea-the-next-day-and-mix-topics-in-the-due-queue.md)    | Review a new idea the next day, and mix topics in the due queue                                  | proposed               |
 | [0039](0039-open-a-concept-round-with-free-recall-behind-an-option.md)            | Open a concept round with free recall, behind an option                                          | proposed               |
 | [0040](0040-guess-before-you-look-with-coach-generate.md)                         | Guess before you look with coach generate, and correct every wrong guess                         | proposed               |
+| [0041](0041-elaborate-a-concept-with-a-why-a-connection-and-a-use.md)             | Elaborate a concept with a why, a connection and a use, checked in code                          | proposed               |

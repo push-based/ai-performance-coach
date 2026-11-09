@@ -26,6 +26,10 @@ One of the key points of a concept note: what your explanation must cover to pas
 
 Marking a chapter in Obsidian: bolding what matters, highlighting the best of it, and summarising the chapter in your own words.
 
+## Elaborate
+
+Explaining an idea in your own words and tying it to things outside it: why it works the way it does, what you already know that it's like, and where you'd use it. `coach elaborate` asks the three questions and adds your answers to the [concept note](#concept-note). It is the Elaborate step of the [climb](#climb).
+
 ## Free recall
 
 Writing down everything you remember about an idea, with the note closed, before any question. `coach spar --free-recall` starts this way on a [concept note](#concept-note), then asks only about the [core assertions](#core-assertion) you left out. It is the Retrieve step of the [climb](#climb).

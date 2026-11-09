@@ -12,3 +12,4 @@ export * from './lib/synthesis.js';
 export * from './lib/climb.js';
 export * from './lib/free-recall.js';
 export * from './lib/generate.js';
+export * from './lib/elaborate.js';

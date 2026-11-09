@@ -1,4 +1,6 @@
 import type {
+  ElaborationRequest,
+  FollowUpRequest,
   ChallengeRequest,
   NextTurnRequest,
   StudyRequest,
@@ -565,6 +567,60 @@ export function buzzwordsMessages(
         'Each term is one to three words, copied as it appears; never an ordinary word such as a verb or a common noun. Reply with only the list, one per line, each line starting with a dash and a space followed by the term itself.',
         '',
         wrapMaterial(request.material, nonce),
+      ].join('\n'),
+    },
+  ];
+}
+
+export function elaborationQuestionsMessages(
+  request: ElaborationRequest,
+  nonce: string,
+): ChatMessage[] {
+  return [
+    {
+      role: 'system',
+      content: systemPrompt(request.rules, request.style, nonce),
+    },
+    {
+      role: 'user',
+      content: [
+        'Write three questions that make the learner elaborate on the idea of this note, in their own words.',
+        '"why": why the idea is built the way it is, and what would break without it.',
+        '"connect": what else the learner already knows that this idea is like, or unlike.',
+        '"apply": where in their own work, this month, the learner would use it.',
+        'Each question is one sentence about the idea the title names. Never state the answer, and never copy a phrase from the note.',
+        ...(request.rejected.length
+          ? [
+              `These questions gave the answer away and were rejected: ${JSON.stringify(request.rejected)}. Write new ones.`,
+            ]
+          : []),
+        'Reply only with JSON that matches the requested schema.',
+        '',
+        wrapNote(request.note, nonce),
+      ].join('\n'),
+    },
+  ];
+}
+
+export function followUpMessages(
+  request: FollowUpRequest,
+  nonce: string,
+): ChatMessage[] {
+  return [
+    { role: 'system', content: graderPrompt(nonce) },
+    {
+      role: 'user',
+      content: [
+        `A learner answered a "${request.kind}" question about an idea. Choose what to ask next.`,
+        '1. "Why?": the answer states something but gives no reason for it.',
+        '2. "For example?": the answer stays abstract and names nothing concrete.',
+        '3. Nothing: the answer already gives a reason and something concrete.',
+        'Reply with only the number: 1, 2 or 3.',
+        '',
+        wrapTranscript(
+          [{ question: request.question, answer: request.answer }],
+          nonce,
+        ),
       ].join('\n'),
     },
   ];
