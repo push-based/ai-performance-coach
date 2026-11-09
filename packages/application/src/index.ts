@@ -12,3 +12,4 @@ export * from './lib/synthesizing/synthesizing.js';
 export * from './lib/ports/library.js';
 export * from './lib/climbing/climbing.js';
 export * from './lib/generating/generating.js';
+export * from './lib/elaborating/elaborating.js';

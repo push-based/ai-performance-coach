@@ -15,6 +15,7 @@ Each command you type in the terminal maps to one _use case_ here. A use case de
 | **Synthesizing** | Finds a book, gathers your marks and reading notes, proposes ideas, asks gap questions, drafts assertions and quotes, then previews and writes a concept note. | `coach synthesize`                         |
 | **Climbing**     | Finds a concept note by title, path or coach id and asks the vault for its climb: each step's evidence, the next step and whether Teach is open.               | `coach climb`                              |
 | **Generating**   | Shows a concept's title or a chapter's place, takes an attempt before the reveal, checks every mark and correction, and records an ungraded generate session.  | `coach generate`                           |
+| **Elaborating**  | Asks a why, a connect and an apply question about a concept, checks each answer and its links, allows one follow-up each, and records an elaborate session.    | `coach elaborate`                          |
 | **Filing**       | Previews and applies moves in the vault: file, capture, archive, set up PARA.                                                                                  | `coach file`, `capture`, `archive`, `init` |
 
 ## The ports

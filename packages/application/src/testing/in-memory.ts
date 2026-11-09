@@ -1,6 +1,8 @@
 import {
   PARA_BUCKETS,
   type ConceptDraft,
+  type ElaborationQuestions,
+  type FollowUp,
   type Exchange,
   type MaterialItem,
   type CoachingStyle,
@@ -17,6 +19,9 @@ import {
   VaultRefusedError,
 } from '../lib/errors.js';
 import type {
+  ElaborationPartner,
+  ElaborationRequest,
+  FollowUpRequest,
   Judge,
   JudgeReport,
   NextTurn,
@@ -625,3 +630,24 @@ export class ScriptedSynthesisPartner implements SynthesisPartner {
 
 export const unusable = (): UnusableReplyError =>
   new UnusableReplyError('model', 'scripted unusable reply');
+
+export class ScriptedElaborationPartner implements ElaborationPartner {
+  readonly questionRequests: ElaborationRequest[] = [];
+  readonly followUpRequests: FollowUpRequest[] = [];
+  readonly questionReplies: (ElaborationQuestions | Error)[] = [];
+  readonly followUps: (FollowUp | null)[] = [];
+
+  async questions(request: ElaborationRequest): Promise<ElaborationQuestions> {
+    this.questionRequests.push(structuredClone(request));
+    const next = this.questionReplies.shift();
+    if (next === undefined)
+      throw new UnusableReplyError('elaboration partner', 'no reply');
+    if (next instanceof Error) throw next;
+    return next;
+  }
+
+  async followUp(request: FollowUpRequest): Promise<FollowUp | null> {
+    this.followUpRequests.push(structuredClone(request));
+    return this.followUps.shift() ?? null;
+  }
+}

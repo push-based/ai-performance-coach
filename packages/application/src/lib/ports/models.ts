@@ -1,5 +1,8 @@
 import type {
   CoachingStyle,
+  ElaborationKind,
+  ElaborationQuestions,
+  FollowUp,
   Exchange,
   ItemJudgement,
   Note,
@@ -84,4 +87,24 @@ export interface StudyPartner {
   hint(request: StudyRequest): Promise<string>;
   quote(request: StudyRequest): Promise<string>;
   check(request: StudyRequest & { explanation: string }): Promise<StudyCheck>;
+}
+
+export interface ElaborationRequest {
+  note: Note;
+  rules: SparringRules;
+  style: CoachingStyle;
+  assertions: readonly string[];
+  rejected: string[];
+}
+
+export interface FollowUpRequest {
+  rules: SparringRules;
+  kind: ElaborationKind;
+  question: string;
+  answer: string;
+}
+
+export interface ElaborationPartner {
+  questions(request: ElaborationRequest): Promise<ElaborationQuestions>;
+  followUp(request: FollowUpRequest): Promise<FollowUp | null>;
 }

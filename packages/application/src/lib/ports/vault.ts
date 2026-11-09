@@ -1,5 +1,6 @@
 import type {
   ClimbStep,
+  ElaborationKind,
   MarkedAssertion,
   ClimbSteps,
   CoachingStyle,
@@ -158,7 +159,7 @@ export interface GenerateItemDraft {
 }
 
 export interface ElaborationDraft {
-  kind: 'why' | 'connect' | 'apply';
+  kind: ElaborationKind;
   question: string;
   answer: string;
   links: string[];
