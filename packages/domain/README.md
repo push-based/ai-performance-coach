@@ -22,6 +22,7 @@ If you want to change _how the coach behaves_ (how many follow-ups it allows, wh
 | **Elaborate**           | What a why, a connect and an apply answer must hold, reading `[[links]]`, the only two follow-ups, and spotting a question that gives the answer away.     | `elaborate.ts`      |
 | **Group**               | Reading groups and "builds on" lines, the structure rules (2–7 groups, each concept once, no cycle), and dropping a question that proposes a structure.    | `group.ts`          |
 | **Read**                | Splitting a chapter into pages, telling a note from a quote, how much of a page the notes hold, and a summary of 1 to 3 own-words sentences.               | `read.ts`           |
+| **Teach**               | The scripted student: what it asks and when, an explicit correction of its misconception, the explain-back, and the verdict.                               | `teach.ts`          |
 | **Free recall**         | The recall question, when an answer gets a neutral probe, and which assertions are left to ask about.                                                      | `free-recall.ts`    |
 | **Vocabulary**          | Shared words: verdicts, tiers, mastery levels, PARA folders, a note, an exchange.                                                                          | `vocabulary.ts`     |
 

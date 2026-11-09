@@ -82,6 +82,14 @@ Working through the gaps of a failed round, with hints and the author's own word
 
 Turning your marks on a book into concept notes, one idea each.
 
+## Teach
+
+The last step of the [climb](#climb): explaining an idea to someone who doesn't know it. In `coach teach` the coach plays a student who knows only the title and believes one wrong thing about it. You pass when you've corrected that, taught every [core assertion](#core-assertion), and explained every term you used. It's based on the [Protégé Effect](#protégé-effect).
+
+## Protégé Effect
+
+The finding that you learn something better when you teach it, because explaining shows you where your understanding has gaps.
+
 ## Tier 1, Tier 2
 
 The two models. **Tier 1** is the local sparring partner (Gemma on Ollama), which sees your notes and runs offline. **Tier 2** is the online judge (Gemini), which never sees your notes.

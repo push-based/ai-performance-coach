@@ -42,6 +42,9 @@ function coachWith(
         writeSummary: async () => {
           throw new Error('not used');
         },
+        saveGuideline: async () => {
+          throw new Error('not used');
+        },
         writeStructure: async (input: StructureInput, execute: boolean) => {
           written.push({ input, execute });
           return {

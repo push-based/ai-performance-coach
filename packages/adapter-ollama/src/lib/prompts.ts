@@ -1,5 +1,6 @@
 import type {
   ElaborationRequest,
+  MisconceptionRequest,
   StructureQuestionRequest,
   FollowUpRequest,
   ChallengeRequest,
@@ -654,6 +655,33 @@ export function structureQuestionsMessages(
         '',
         `<material-${nonce}>`,
         structure,
+        `</material-${nonce}>`,
+      ].join('\n'),
+    },
+  ];
+}
+
+export function misconceptionMessages(
+  request: MisconceptionRequest,
+  nonce: string,
+): ChatMessage[] {
+  return [
+    { role: 'system', content: graderPrompt(nonce) },
+    {
+      role: 'user',
+      content: [
+        `A learner will teach "${neutralize(request.title).replace(/"/g, "'")}" to a student who knows nothing about it.`,
+        "Pick one of the numbered points below and write the student's plausible misconception about it: a short, wrong version a newcomer might believe.",
+        'Write it in plain words, in your own words: change the meaning, never copy the point.',
+        ...(request.rejected.length
+          ? [
+              `These were rejected, so write a different one: ${JSON.stringify(request.rejected)}.`,
+            ]
+          : []),
+        'Reply only with JSON that matches the requested schema: "assertion" is the number of the point, from 1, and "text" the misconception.',
+        '',
+        `<material-${nonce}>`,
+        ...request.assertions.map((a, i) => `${i + 1}. ${neutralize(a)}`),
         `</material-${nonce}>`,
       ].join('\n'),
     },

@@ -355,3 +355,10 @@ export type WriteSummaryResult = z.infer<typeof WriteSummaryResult>;
 
 export const RebuildClimbResult = WriteStructureResult.omit({ path: true });
 export type RebuildClimbResult = z.infer<typeof RebuildClimbResult>;
+
+export const SaveGuidelineResult = z.object({
+  path: z.string().nullable().optional().default(null),
+  warnings: z.array(z.string()).optional().default([]),
+  executed: z.boolean(),
+});
+export type SaveGuidelineResult = z.infer<typeof SaveGuidelineResult>;

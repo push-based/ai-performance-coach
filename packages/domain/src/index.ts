@@ -15,3 +15,4 @@ export * from './lib/generate.js';
 export * from './lib/elaborate.js';
 export * from './lib/group.js';
 export * from './lib/read.js';
+export * from './lib/teach.js';

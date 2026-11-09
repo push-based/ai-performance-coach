@@ -6,3 +6,4 @@ export * from './lib/ollama-style-classifier.js';
 export * from './lib/ollama-synthesis-partner.js';
 export * from './lib/ollama-elaboration-partner.js';
 export * from './lib/ollama-structure-partner.js';
+export * from './lib/ollama-teach-partner.js';

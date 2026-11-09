@@ -1,6 +1,6 @@
 # Your first session
 
-This page takes one book through the whole loop: distill, synthesize, spar, judge, study and review. You need a working [setup](setup.md) and a book that kb-template has converted into your vault.
+This page takes one book through the whole loop: distill, synthesize, spar, judge, study and review, then the rest of the climb. You need a working [setup](setup.md) and a book that kb-template has converted into your vault.
 
 Say you've read _Building a Second Brain_, and kb-template has turned it into chapter notes under `3.Resources/0.Raw/Books/…`.
 
@@ -82,6 +82,19 @@ Every result moves the next review:
 | Passed the judge (Tier 2) | 7 days, then 14, 30, 60, 120, 240 and 365 as you keep passing |
 
 A new concept note is due the day after you made it, marked "first review" in `coach due`. When several ideas are due, the coach mixes their topics, so two ideas from the same group or book don't come one after the other. You can change every number in [`ladder`](configuration.md#settings).
+
+## 7. Climb the rest of the way
+
+Sparring and coming back after a gap are two of the seven steps of the [climb](glossary.md#climb). The others each have a command, and `coach climb` shows where each idea stands:
+
+```sh
+npm run coach -- read "Building a Second Brain"     # read a chapter and note what resonates
+npm run coach -- group "Building a Second Brain"    # sort its concepts into your own layers
+npm run coach -- generate "Progressive Summarization"  # guess before you look
+npm run coach -- elaborate "Progressive Summarization" # why, what it's like, where you'd use it
+npm run coach -- teach "Progressive Summarization"     # teach it, after a passed review on a later day
+npm run coach -- climb
+```
 
 ## Why it's strict
 

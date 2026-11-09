@@ -3,6 +3,7 @@ import {
   type ConceptDraft,
   type ElaborationQuestions,
   type FollowUp,
+  type Misconception,
   type Exchange,
   type MaterialItem,
   type CoachingStyle,
@@ -23,6 +24,8 @@ import type {
   ElaborationRequest,
   FollowUpRequest,
   Judge,
+  MisconceptionRequest,
+  TeachPartner,
   JudgeReport,
   NextTurn,
   NextTurnRequest,
@@ -42,6 +45,8 @@ import type {
   IdeaProposal,
   Library,
   PassageHit,
+  GuidelineCheck,
+  GuidelineInput,
   ReadingNotesCheck,
   ReadingNotesInput,
   StructureCheck,
@@ -592,6 +597,20 @@ export class InMemoryLibrary implements Library {
     return { warnings: [], executed: execute };
   }
 
+  readonly guidelines: { input: GuidelineInput; execute: boolean }[] = [];
+
+  async saveGuideline(
+    input: GuidelineInput,
+    execute: boolean,
+  ): Promise<GuidelineCheck> {
+    this.guidelines.push({ input: structuredClone(input), execute });
+    return {
+      path: `${input.folder}/${input.title}.md`,
+      warnings: [],
+      executed: execute,
+    };
+  }
+
   async writeStructure(
     input: StructureInput,
     execute: boolean,
@@ -735,6 +754,20 @@ export class ScriptedStructurePartner implements StructurePartner {
   async questions(request: StructureQuestionRequest): Promise<string[]> {
     this.requests.push(structuredClone(request));
     const next = this.replies.shift() ?? [];
+    if (next instanceof Error) throw next;
+    return next;
+  }
+}
+
+export class ScriptedTeachPartner implements TeachPartner {
+  readonly requests: MisconceptionRequest[] = [];
+  readonly replies: (Misconception | Error)[] = [];
+
+  async misconception(request: MisconceptionRequest): Promise<Misconception> {
+    this.requests.push(structuredClone(request));
+    const next = this.replies.shift();
+    if (next === undefined)
+      throw new UnusableReplyError('teach partner', 'no reply');
     if (next instanceof Error) throw next;
     return next;
   }
