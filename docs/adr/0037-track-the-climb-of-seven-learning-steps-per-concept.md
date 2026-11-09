@@ -5,7 +5,7 @@ status: proposed
 date: 2026-11-09
 supersedes: []
 superseded_by: []
-links: ['ADR-0007', 'ADR-0009', 'ADR-0023', 'ADR-0028']
+links: ['ADR-0003', 'ADR-0007', 'ADR-0023', 'ADR-0028']
 ---
 
 # ADR-0037: Track the climb of seven learning steps on each concept note
@@ -16,23 +16,19 @@ Reading something, or reading an AI summary of it, gives you fluency: the feelin
 
 ai-coach already covers parts of the climb: Distill and synthesis (ADR-0023, ADR-0028) come before it, `coach spar` is Retrieve, and the review ladder (ADR-0007) is Space. Nothing records which steps a learner has done on an idea, so neither the learner nor the coach can see the gaps. Later ADRs add the missing steps one by one; this one adds the record they share.
 
+kb-template's ADR-KI-0068 gives the vault server the climb: it keeps each step's evidence, checks each step's rules when the evidence is written, and reports each concept's climb through its `climb` tool.
+
 ## Decision
 
-1. **The climb belongs to a concept note.** The steps, in order, are `read`, `group`, `generate`, `retrieve`, `elaborate`, `space`, `teach`. The domain holds them in `climb.ts`, with `nextStep`, `canStart` and the skipped steps.
-2. **A step is never done without evidence.** Each done step is a record of its date and its evidence: a session id, or the vault path that proves it.
-3. **Retrieve and Space are rebuilt from the session history**, never read from frontmatter. Retrieve is the first Tier 1 session on the concept, pass or fail. Space is the first Tier 1 session at least 1 day after the previous one. A same-day re-spar is not Space.
-4. **The other steps are recorded in the concept note's frontmatter**, as a map from step to date: `climb: { read: 2026-11-09, group: 2026-11-09, … }`, with the note as their evidence. Each later step's command writes its own date through kb-template, with a preview (ADR-0009), after it has written its evidence. The session files stay the source of truth for spar and judge results; when the frontmatter and the sessions disagree, the sessions win.
-5. **The order is a recommendation, not a lock**, with two exceptions that are domain rules:
-   - **Teach needs Space.** Teach unlocks only after a Tier 1 pass at least 1 day after the previous attempt. A recorded `teach` date without such a pass before it is ignored.
-   - **Generate before reveal.** Generate counts only when the attempt was saved before the answer was shown. This is checked by the Generate command, in its own ADR.
-
-   Any other step may run out of order. The climb view names the steps left open below the highest one done, such as "Generate skipped".
-
-6. **`coach climb [note …]`** shows the stairs for the concepts named (by title, path or coach_id), or for every concept note. Done steps are green, a done Teach is yellow, open steps are dim, and the line under each concept names the next step. It is plain text so that it reads on a projector, and it writes nothing.
+1. **The climb belongs to a concept note.** The steps, in order, are `read`, `group`, `generate`, `retrieve`, `elaborate`, `space` and `teach`. The domain names them in `climb.ts`.
+2. **The vault works out the climb, and the coach shows it.** A step is done only when the vault holds its evidence: a reading-notes file and chapter summary, a structure note, or a session. The coach asks kb-template's `climb` tool for each step's date and evidence, the next step, the steps skipped, and whether Teach is open, and it does not work any of that out again. The rules live in one place, beside the evidence, and the coach reaches them only through the vault server (ADR-0003).
+3. **The order is a recommendation, not a lock.** Any step may run before an earlier one, and the climb names the earlier open steps as skipped, such as "Generate skipped". The one lock is the vault's: Teach waits for a passed spaced review, a spar passed at least a day after the attempt before it.
+4. **The `climb:` summary in a concept note's frontmatter is the vault's to write**, from the evidence, in the same write as the evidence. The coach never writes it. When the vault reports that a summary disagrees with its evidence, `coach climb` says so and names `rebuild_climb`.
+5. **`coach climb [note …]`** shows the stairs for the concepts named (by title, path or coach_id), or for every concept note. Done steps are green, a done Teach is yellow, open steps are dim, and the line under each concept names the next step and, where one exists, the command for it. It is plain text so that it reads on a projector, and it writes nothing.
 
 ## Consequences
 
 - A learner sees, per idea, which steps they have done and what comes next. The talk's slide becomes a real command.
-- Retrieve and Space work today, from the sessions already in the vault. The other steps show as open until their commands land.
-- Writing the `climb` map needs kb-template to set a nested frontmatter value on a concept note. `set_frontmatter` takes only flat values today, so the first command that records a step needs that change in kb-template first.
-- kb-template returns YAML dates in the map as either `YYYY-MM-DD` or a full ISO timestamp; the coach reads both and ignores anything else.
+- Retrieve and Space show from the sessions already in the vault. The other steps show as open until their commands land.
+- `coach climb` needs a kb-template with ADR-KI-0068. An older server has no `climb` tool, and the command fails with the server's message.
+- Each later step's command writes its evidence through a vault tool (`add_reading_notes`, `write_structure`, `record_session` with a session kind), with a preview (ADR-0009), and the vault sets the summary.

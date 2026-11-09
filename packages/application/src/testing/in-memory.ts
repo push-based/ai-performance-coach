@@ -1,6 +1,5 @@
 import {
   PARA_BUCKETS,
-  type ClimbDates,
   type ConceptDraft,
   type Exchange,
   type MaterialItem,
@@ -44,6 +43,7 @@ import type {
   PendingSession,
 } from '../lib/ports/state.js';
 import type {
+  ConceptClimb,
   DueReport,
   FilingPlan,
   FilingRequest,
@@ -79,7 +79,6 @@ interface StoredNote {
   chapter: BookChapter | null;
   concept: ConceptDetails | null;
   style: CoachingStyle | null;
-  climb: ClimbDates;
 }
 
 interface StoredSession {
@@ -99,6 +98,7 @@ interface StoredSession {
 export class InMemoryVault implements NotesRepository, SessionLog, VaultFiling {
   readonly notes = new Map<string, StoredNote>();
   readonly sessions: StoredSession[] = [];
+  readonly climbs: ConceptClimb[] = [];
   private ids = 0;
 
   constructor(notes: Record<string, string> = {}) {
@@ -114,7 +114,6 @@ export class InMemoryVault implements NotesRepository, SessionLog, VaultFiling {
       style?: CoachingStyle;
       concept?: ConceptDetails;
       raw?: boolean;
-      climb?: ClimbDates;
     } = {
       rawRole: null,
     },
@@ -130,7 +129,6 @@ export class InMemoryVault implements NotesRepository, SessionLog, VaultFiling {
       chapter: raw.chapter ?? null,
       concept: raw.concept ?? null,
       style: raw.style ?? null,
-      climb: raw.climb ?? {},
     });
   }
 
@@ -206,8 +204,17 @@ export class InMemoryVault implements NotesRepository, SessionLog, VaultFiling {
       chapter: note.chapter,
       concept: note.concept,
       style: note.style,
-      climb: note.climb,
     };
+  }
+
+  async climb(note?: string): Promise<ConceptClimb[]> {
+    if (note === undefined) return this.climbs;
+    const found = this.climbs.filter(
+      (c) => c.path === note || c.title === note,
+    );
+    if (!found.length)
+      throw new VaultRefusedError(`climb: ${note} is not a concept note`);
+    return found;
   }
 
   async dueForReview(today: string): Promise<DueReport> {

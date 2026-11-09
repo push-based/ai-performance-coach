@@ -4,6 +4,7 @@ import {
   VaultRefusedError,
   type BookChapter,
   type BookProgress,
+  type ConceptClimb,
   type ConceptCheck,
   type DueReport,
   type FilingPlan,
@@ -19,7 +20,6 @@ import {
   type VaultFiling,
 } from '@ai-coach/application';
 import {
-  climbDates,
   isCoachingStyle,
   tier2Payload,
   type ConceptDraft,
@@ -97,7 +97,6 @@ function details(note: ReadNoteResult): NoteDetails {
     style: isCoachingStyle(note.frontmatter['style'])
       ? note.frontmatter['style']
       : null,
-    climb: climbDates(note.frontmatter['climb']),
     sessions: note.history.entries.map((e) => ({
       sessionId: e.session_id,
       tier: e.tier,
@@ -137,6 +136,12 @@ export class McpVault
       notes: result.notes,
       invalidSessions: result.invalidSessions,
     };
+  }
+
+  async climb(note?: string): Promise<ConceptClimb[]> {
+    return this.client
+      .climb(note === undefined ? {} : { note })
+      .catch(translate);
   }
 
   async readNote(path: string): Promise<NoteDetails> {
