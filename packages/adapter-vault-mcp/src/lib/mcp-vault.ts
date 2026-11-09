@@ -20,6 +20,8 @@ import {
   type RecordedSession,
   type SessionDraft,
   type SessionLog,
+  type StructureCheck,
+  type StructureInput,
   type VaultFiling,
 } from '@ai-coach/application';
 import {
@@ -319,6 +321,7 @@ export class McpVault
       author: b.author,
       stage: b.stage,
       notes: b.steps.notes,
+      concepts: b.steps.concepts,
       chapters: b.chapters.map(({ path, title, summary, state }) => ({
         path,
         title,
@@ -326,6 +329,29 @@ export class McpVault
         state,
       })),
     }));
+  }
+
+  async writeStructure(
+    input: StructureInput,
+    execute: boolean,
+    versions?: Record<string, string>,
+  ): Promise<StructureCheck> {
+    const result = await this.client
+      .writeStructure({
+        book: input.book,
+        groups: input.groups,
+        builds_on: input.buildsOn,
+        execute,
+        ...(versions ? { versions } : {}),
+      })
+      .catch(translate);
+    return {
+      path: result.path,
+      warnings: result.warnings,
+      climbs: result.climbs.map((c) => c.path),
+      versions: result.versions,
+      executed: result.executed,
+    };
   }
 
   async findPassages(

@@ -20,6 +20,7 @@ If you want to change _how the coach behaves_ (how many follow-ups it allows, wh
 | **The climb**           | The seven learning steps of a concept note, from read to teach, in order. The vault works out which are done.                                              | `climb.ts`          |
 | **Generate**            | An attempt of at least 10 words or /idk, marks of got it, wrong or missed, a correction for each wrong guess, and that the attempt came before the reveal. | `generate.ts`       |
 | **Elaborate**           | What a why, a connect and an apply answer must hold, reading `[[links]]`, the only two follow-ups, and spotting a question that gives the answer away.     | `elaborate.ts`      |
+| **Group**               | Reading groups and "builds on" lines, the structure rules (2–7 groups, each concept once, no cycle), and dropping a question that proposes a structure.    | `group.ts`          |
 | **Free recall**         | The recall question, when an answer gets a neutral probe, and which assertions are left to ask about.                                                      | `free-recall.ts`    |
 | **Vocabulary**          | Shared words: verdicts, tiers, mastery levels, PARA folders, a note, an exchange.                                                                          | `vocabulary.ts`     |
 

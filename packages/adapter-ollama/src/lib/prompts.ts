@@ -1,5 +1,6 @@
 import type {
   ElaborationRequest,
+  StructureQuestionRequest,
   FollowUpRequest,
   ChallengeRequest,
   NextTurnRequest,
@@ -621,6 +622,39 @@ export function followUpMessages(
           [{ question: request.question, answer: request.answer }],
           nonce,
         ),
+      ].join('\n'),
+    },
+  ];
+}
+
+export function structureQuestionsMessages(
+  request: StructureQuestionRequest,
+  nonce: string,
+): ChatMessage[] {
+  const structure = JSON.stringify({
+    book: neutralize(request.book),
+    groups: request.groups.map((g) => ({
+      name: neutralize(g.name),
+      concepts: g.concepts.map(neutralize),
+    })),
+    builds_on: request.buildsOn.map((e) => ({
+      from: neutralize(e.from),
+      to: neutralize(e.to),
+    })),
+  });
+  return [
+    { role: 'system', content: graderPrompt(nonce) },
+    {
+      role: 'user',
+      content: [
+        "A learner sorted a book's ideas into their own named groups and said which group builds on which.",
+        `Ask at most ${request.max} short questions that make the learner test their own structure: a concept that may sit in the wrong group, a group nothing builds on, or a layer that seems to skip one.`,
+        'Use only the group names and concept titles given. Never propose a new group, a new name or a new edge, and never give the answer.',
+        'Reply only with JSON that matches the requested schema.',
+        '',
+        `<material-${nonce}>`,
+        structure,
+        `</material-${nonce}>`,
       ].join('\n'),
     },
   ];

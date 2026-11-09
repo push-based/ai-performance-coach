@@ -5,6 +5,7 @@ import {
 } from '@ai-coach/adapter-local-state';
 import {
   OllamaElaborationPartner,
+  OllamaStructurePartner,
   OllamaSynthesisPartner,
   OllamaSparringPartner,
   OllamaStudyPartner,
@@ -15,6 +16,7 @@ import {
   Climbing,
   Elaborating,
   Generating,
+  Grouping,
   Synthesizing,
   Filing,
   Judging,
@@ -23,6 +25,7 @@ import {
   Studying,
   type Clock,
   type ElaborationPartner,
+  type StructurePartner,
   type SynthesisPartner,
   type Judge,
   type SparringPartner,
@@ -42,6 +45,7 @@ export interface Coach {
   climbing(): Climbing;
   generating(): Generating;
   elaborating(): Elaborating;
+  grouping(): Grouping;
   close(): Promise<void>;
 }
 
@@ -52,6 +56,7 @@ export interface AdapterOverrides {
   classifier?: (config: CoachConfig) => StyleClassifier;
   synthesisPartner?: (config: CoachConfig) => SynthesisPartner;
   elaborationPartner?: (config: CoachConfig) => ElaborationPartner;
+  structurePartner?: (config: CoachConfig) => StructurePartner;
 }
 
 export async function composeCoach(
@@ -121,6 +126,15 @@ export async function composeCoach(
         includeAssertions: config.judge.includeAssertions,
       }),
     climbing: () => new Climbing(vault),
+    grouping: () =>
+      new Grouping({
+        notes: vault,
+        library: vault,
+        partner:
+          overrides.structurePartner?.(config) ??
+          new OllamaStructurePartner(ollamaOptions(config)),
+        rules: config.sparring,
+      }),
     elaborating: () =>
       new Elaborating({
         notes: vault,

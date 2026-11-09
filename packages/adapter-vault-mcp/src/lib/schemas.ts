@@ -326,3 +326,15 @@ export const ClimbResult = z.array(
   }),
 );
 export type ClimbResult = z.infer<typeof ClimbResult>;
+
+export const WriteStructureResult = z.object({
+  path: z.string().nullable(),
+  warnings: z.array(z.string()).optional().default([]),
+  climbs: z
+    .array(z.object({ path: z.string() }).passthrough())
+    .optional()
+    .default([]),
+  versions: z.record(z.string(), z.string()).optional().default({}),
+  executed: z.boolean(),
+});
+export type WriteStructureResult = z.infer<typeof WriteStructureResult>;

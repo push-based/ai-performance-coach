@@ -11,6 +11,7 @@
 | `OllamaStyleClassifier`    | Reads a note and picks the coaching style that suits it, when you haven't chosen one.                                                                   | spar, study        |
 | `OllamaSynthesisPartner`   | Groups your marks into ideas, asks gap questions, drafts core assertions from your words, and suggests buzzwords.                                       | `coach synthesize` |
 | `OllamaElaborationPartner` | Words the why, connect and apply questions from the note, and picks "Why?", "For example?" or no follow-up.                                             | `coach elaborate`  |
+| `OllamaStructurePartner`   | Asks up to three questions about the learner's own groups and layers, from the titles alone.                                                            | `coach group`      |
 | `OllamaClient`             | The shared connection to Ollama, with retries and checks on what comes back.                                                                            | all of the above   |
 
 All the prompts are in `prompts.ts`, so tuning how the coach talks starts there.

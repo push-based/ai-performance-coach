@@ -42,6 +42,10 @@ import type {
   IdeaProposal,
   Library,
   PassageHit,
+  StructureCheck,
+  StructureInput,
+  StructurePartner,
+  StructureQuestionRequest,
 } from '../lib/ports/library.js';
 import type {
   Clock,
@@ -529,8 +533,28 @@ export class InMemoryLibrary implements Library {
     readonly hits: PassageHit[] = [],
   ) {}
 
+  readonly structures: { input: StructureInput; execute: boolean }[] = [];
+  readonly structureWarnings: string[] = [];
+
   async readingProgress(book?: string): Promise<BookProgress[]> {
     return this.books.filter((b) => !book || b.folder === book);
+  }
+
+  async writeStructure(
+    input: StructureInput,
+    execute: boolean,
+    versions?: Record<string, string>,
+  ): Promise<StructureCheck> {
+    this.structures.push({ input: structuredClone(input), execute });
+    if (execute && !versions)
+      throw new VaultRefusedError('write_structure: versions missing');
+    return {
+      path: `3.Resources/Concepts/Structures/${input.book}.md`,
+      warnings: [...this.structureWarnings],
+      climbs: input.groups.flatMap((g) => g.concepts),
+      versions: { 'structure.md': 'v1' },
+      executed: execute,
+    };
   }
 
   async findPassages(
@@ -649,5 +673,17 @@ export class ScriptedElaborationPartner implements ElaborationPartner {
   async followUp(request: FollowUpRequest): Promise<FollowUp | null> {
     this.followUpRequests.push(structuredClone(request));
     return this.followUps.shift() ?? null;
+  }
+}
+
+export class ScriptedStructurePartner implements StructurePartner {
+  readonly requests: StructureQuestionRequest[] = [];
+  readonly replies: (string[] | Error)[] = [];
+
+  async questions(request: StructureQuestionRequest): Promise<string[]> {
+    this.requests.push(structuredClone(request));
+    const next = this.replies.shift() ?? [];
+    if (next instanceof Error) throw next;
+    return next;
   }
 }

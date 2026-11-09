@@ -66,6 +66,10 @@ One recorded sparring round on one note: the questions, your answers and the ver
 
 Explaining an idea to the local model, which asks follow-ups and gives a verdict. Also called **Tier 1**. It runs offline.
 
+## Structure note
+
+A note that holds a book's [concept notes](#concept-note) in groups you named, and which group builds on which, such as tokens → primitives → components → patterns. `coach group` writes it to `3.Resources/Concepts/Structures/`. It is the Group step of the [climb](#climb).
+
 ## Study
 
 Working through the gaps of a failed round, with hints and the author's own words.

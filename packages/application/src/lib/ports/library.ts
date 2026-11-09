@@ -1,5 +1,7 @@
 import type {
+  BuildsOn,
   ConceptDraft,
+  ConceptGroup,
   Exchange,
   MaterialItem,
   SparringRules,
@@ -14,6 +16,7 @@ export interface BookProgress {
   author: string | null;
   stage: string;
   notes: string[];
+  concepts?: string[];
   chapters: {
     path: string;
     title: string;
@@ -42,8 +45,27 @@ export interface ConceptCheck {
   executed: boolean;
 }
 
+export interface StructureInput {
+  book: string;
+  groups: { name: string; concepts: string[] }[];
+  buildsOn: BuildsOn[];
+}
+
+export interface StructureCheck {
+  path: string | null;
+  warnings: string[];
+  climbs: string[];
+  versions: Record<string, string>;
+  executed: boolean;
+}
+
 export interface Library {
   readingProgress(book?: string): Promise<BookProgress[]>;
+  writeStructure(
+    input: StructureInput,
+    execute: boolean,
+    versions?: Record<string, string>,
+  ): Promise<StructureCheck>;
   findPassages(
     query: string,
     options: { within?: string; limit?: number },
@@ -82,4 +104,16 @@ export interface SynthesisPartner {
     material: readonly MaterialItem[];
     max: number;
   }): Promise<string[]>;
+}
+
+export interface StructureQuestionRequest {
+  rules: SparringRules;
+  book: string;
+  groups: readonly ConceptGroup[];
+  buildsOn: readonly BuildsOn[];
+  max: number;
+}
+
+export interface StructurePartner {
+  questions(request: StructureQuestionRequest): Promise<string[]>;
 }
