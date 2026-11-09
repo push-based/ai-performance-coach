@@ -314,3 +314,98 @@ describe('SparringConversation', () => {
     });
   });
 });
+
+describe('SparringConversation with a free-recall opening', () => {
+  const ASSERTIONS = [
+    'Microtasks drain completely before the next macrotask.',
+    'A long chain of microtasks can starve rendering and timers.',
+  ];
+  const CONCEPT = { ...REF, assertions: ASSERTIONS };
+  const RECALL =
+    'Promise callbacks run before the next timer callback, all of them, every time the stack is empty.';
+
+  const open = (partner: ScriptedPartner, reference = CONCEPT) =>
+    new SparringConversation(partner, reference, sparringRules(), 'feynman', {
+      freeRecall: true,
+    });
+
+  it('opens with the recall question, without asking the model for a challenge', async () => {
+    const partner = new ScriptedPartner();
+    const c = open(partner);
+    expect(await c.start()).toEqual({
+      kind: 'challenge',
+      question:
+        'Without looking: write down everything you remember about Event loop.',
+    });
+    expect(c.freeRecall).toBe(true);
+    expect(partner.challengeRequests).toEqual([]);
+  });
+
+  it('asks follow-ups only about the assertions the recall missed', async () => {
+    const partner = new ScriptedPartner();
+    partner.covered.push([ASSERTIONS[0]!]);
+    partner.turns.push({ action: 'probe', question: 'What could starve?' });
+    const c = open(partner);
+    await c.start();
+    expect(await c.answer(RECALL)).toEqual({
+      kind: 'probe',
+      question: 'What could starve?',
+    });
+    expect(partner.recallRequests[0]).toMatchObject({
+      assertions: ASSERTIONS,
+      exchanges: [{ answer: RECALL }],
+    });
+    expect(partner.turnRequests[0]).toMatchObject({
+      assertions: [ASSERTIONS[1]],
+      scope: [ASSERTIONS[1]],
+    });
+  });
+
+  it('passes at once when the recall covers every assertion', async () => {
+    const partner = new ScriptedPartner();
+    partner.covered.push([...ASSERTIONS]);
+    const c = open(partner);
+    await c.start();
+    expect(await c.answer(RECALL)).toMatchObject({
+      kind: 'verdict',
+      verdict: 'pass',
+      gaps: [],
+    });
+    expect(partner.turnRequests).toEqual([]);
+  });
+
+  it('meets "I know this" with one neutral probe and no hint, then scores both answers', async () => {
+    const partner = new ScriptedPartner();
+    partner.covered.push([]);
+    partner.turns.push(conclude('fail', ['You did not explain: starving']));
+    const c = open(partner);
+    await c.start();
+    expect(await c.answer('I know this.')).toEqual({
+      kind: 'probe',
+      question: NEUTRAL_PROBE,
+    });
+    await c.answer('Still nothing much.');
+    expect(partner.recallRequests).toHaveLength(1);
+    expect(partner.recallRequests[0]!.exchanges.map((e) => e.answer)).toEqual([
+      'I know this.',
+      'Still nothing much.',
+    ]);
+  });
+
+  it('lets the learner answer the recall again when the check fails', async () => {
+    const partner = new ScriptedPartner();
+    partner.covered.push(new Error('model down'), [...ASSERTIONS]);
+    const c = open(partner);
+    await c.start();
+    await expect(c.answer(RECALL)).rejects.toThrow('model down');
+    expect(await c.answer(RECALL)).toMatchObject({ verdict: 'pass' });
+  });
+
+  it('opens with a normal challenge on a note without core assertions', async () => {
+    const partner = new ScriptedPartner();
+    partner.challenges.push(CHALLENGE);
+    const c = open(partner, REF);
+    expect(await c.start()).toEqual({ kind: 'challenge', question: CHALLENGE });
+    expect(c.freeRecall).toBe(false);
+  });
+});

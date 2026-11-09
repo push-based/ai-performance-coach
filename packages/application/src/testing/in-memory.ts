@@ -23,6 +23,7 @@ import type {
   NextTurnRequest,
   ChallengeRequest,
   OpeningChallenge,
+  RecallCheckRequest,
   StudyCheck,
   StudyPartner,
   StudyRequest,
@@ -338,6 +339,8 @@ export class ScriptedPartner implements SparringPartner {
   readonly turnRequests: NextTurnRequest[] = [];
   readonly challenges: (string | OpeningChallenge | Error)[] = [];
   readonly turns: (NextTurn | Error)[] = [];
+  readonly recallRequests: RecallCheckRequest[] = [];
+  readonly covered: (string[] | Error)[] = [];
 
   async openingChallenge(request: ChallengeRequest): Promise<OpeningChallenge> {
     this.challengeRequests.push(structuredClone(request));
@@ -359,6 +362,15 @@ export class ScriptedPartner implements SparringPartner {
     this.turnRequests.push(structuredClone(request));
     const next = this.turns.shift();
     if (next === undefined) throw new Error('ScriptedPartner ran out of turns');
+    if (next instanceof Error) throw next;
+    return next;
+  }
+
+  async coveredAssertions(request: RecallCheckRequest): Promise<string[]> {
+    this.recallRequests.push(structuredClone(request));
+    const next = this.covered.shift();
+    if (next === undefined)
+      throw new Error('ScriptedPartner ran out of recall checks');
     if (next instanceof Error) throw next;
     return next;
   }

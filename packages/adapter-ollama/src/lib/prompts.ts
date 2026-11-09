@@ -229,7 +229,7 @@ export function gapCheckMessages(
 }
 
 export function assertionCheckMessages(
-  request: NextTurnRequest,
+  request: { exchanges: readonly Exchange[] },
   assertion: string,
   nonce: string,
 ): ChatMessage[] {

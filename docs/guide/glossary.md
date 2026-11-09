@@ -26,6 +26,10 @@ One of the key points of a concept note: what your explanation must cover to pas
 
 Marking a chapter in Obsidian: bolding what matters, highlighting the best of it, and summarising the chapter in your own words.
 
+## Free recall
+
+Writing down everything you remember about an idea, with the note closed, before any question. `coach spar --free-recall` starts this way on a [concept note](#concept-note), then asks only about the [core assertions](#core-assertion) you left out. It is the Retrieve step of the [climb](#climb).
+
 ## Judge
 
 The online model (Gemini) that gives a second, stricter verdict on your sparring answers. Also called **Tier 2**. It sees only the questions and your answers, never your notes.

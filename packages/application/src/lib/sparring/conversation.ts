@@ -3,7 +3,10 @@ import {
   NEUTRAL_PROBE,
   SparringRound,
   closestGap,
+  freeRecallQuestion,
   groundedIn,
+  missedAssertions,
+  needsNeutralProbe,
   type Note,
   type SparringResult,
   type CoachingStyle,
@@ -20,20 +23,38 @@ export type Turn =
   | { kind: 'probe'; question: string }
   | { kind: 'verdict'; verdict: Verdict; gaps: string[]; feedback: string };
 
+export interface ConversationOptions {
+  freeRecall?: boolean;
+}
+
+type Recall = 'off' | 'open' | 'probed' | 'scored';
+
+function teaches(assertions: readonly string[]): string {
+  return `This note teaches that ${assertions.map((a) => a.trim().replace(/\.$/, '')).join('; ')}.`;
+}
+
 export class SparringConversation {
   private round: SparringRound;
   private readonly note: Note;
   private focus = '';
   private scope: string[] = [];
+  private assertions: readonly string[];
+  private recall: Recall = 'off';
 
   constructor(
     private readonly partner: SparringPartner,
     private readonly reference: Reference,
     private readonly rules: SparringRules,
     readonly style: CoachingStyle,
+    private readonly options: ConversationOptions = {},
   ) {
     this.note = reference.note;
+    this.assertions = reference.assertions;
     this.round = SparringRound.over(this.note, rules);
+  }
+
+  get freeRecall(): boolean {
+    return this.recall !== 'off';
   }
 
   get isConcluded(): boolean {
@@ -41,6 +62,16 @@ export class SparringConversation {
   }
 
   async start(): Promise<Turn> {
+    if (this.options.freeRecall && this.assertions.length) {
+      const question = freeRecallQuestion(this.reference.note.title);
+      if (!this.round.quotesNote(question)) {
+        this.round.open(question);
+        this.recall = 'open';
+        this.focus = teaches(this.assertions);
+        this.scope = [...this.assertions];
+        return { kind: 'challenge', question };
+      }
+    }
     const rejected: string[] = [];
     for (
       let attempt = 0;
@@ -52,7 +83,7 @@ export class SparringConversation {
           note: this.note,
           rules: this.rules,
           style: this.style,
-          assertions: this.reference.assertions,
+          assertions: [...this.assertions],
           rejected: [...rejected],
         });
       const banned =
@@ -83,7 +114,67 @@ export class SparringConversation {
   async answer(text: string): Promise<Turn> {
     const submission = this.round.submit(text);
     if (submission.kind === 'rephrase') return submission;
+    if (this.recall === 'open' || this.recall === 'probed')
+      return this.afterRecall(text);
+    return this.nextTurn();
+  }
 
+  private async afterRecall(text: string): Promise<Turn> {
+    if (
+      this.recall === 'open' &&
+      needsNeutralProbe(text) &&
+      this.round.followUpsLeft > 0
+    ) {
+      this.recall = 'probed';
+      this.round.probe(NEUTRAL_PROBE);
+      return { kind: 'probe', question: NEUTRAL_PROBE };
+    }
+    let covered: string[];
+    try {
+      covered = await this.partner.coveredAssertions({
+        note: this.note,
+        rules: this.rules,
+        style: this.style,
+        assertions: this.assertions,
+        exchanges: this.round.transcript,
+      });
+    } catch (err) {
+      this.round.withdrawLastAnswer();
+      throw err;
+    }
+    const recall = this.recall;
+    this.recall = 'scored';
+    const missed = missedAssertions(this.assertions, covered);
+    if (!missed.length) {
+      return {
+        kind: 'verdict',
+        ...this.round.conclude(
+          'pass',
+          [],
+          'Your recall covered every core assertion, with the note closed.',
+        ),
+      };
+    }
+    const before = {
+      assertions: this.assertions,
+      focus: this.focus,
+      scope: this.scope,
+    };
+    this.assertions = missed;
+    this.focus = teaches(missed);
+    this.scope = [...missed];
+    try {
+      return await this.nextTurn();
+    } catch (err) {
+      this.recall = recall;
+      this.assertions = before.assertions;
+      this.focus = before.focus;
+      this.scope = before.scope;
+      throw err;
+    }
+  }
+
+  private async nextTurn(): Promise<Turn> {
     const followUpsLeft = this.round.followUpsLeft;
     let next;
     try {
@@ -93,7 +184,7 @@ export class SparringConversation {
         style: this.style,
         focus: this.focus,
         scope: this.scope,
-        assertions: this.reference.assertions,
+        assertions: this.assertions,
         exchanges: this.round.transcript,
         followUpsLeft,
         rejected: [],
@@ -144,7 +235,7 @@ export class SparringConversation {
       style: this.style,
       focus: this.focus,
       scope: this.scope,
-      assertions: this.reference.assertions,
+      assertions: this.assertions,
       exchanges: this.round.transcript,
       followUpsLeft: 1,
       rejected: [question],

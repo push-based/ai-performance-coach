@@ -39,9 +39,18 @@ export type NextTurn =
   | { action: 'probe'; question: string }
   | { action: 'conclude'; verdict: Verdict; gaps: string[]; feedback: string };
 
+export interface RecallCheckRequest {
+  note: Note;
+  rules: SparringRules;
+  style: CoachingStyle;
+  assertions: readonly string[];
+  exchanges: readonly Exchange[];
+}
+
 export interface SparringPartner {
   openingChallenge(request: ChallengeRequest): Promise<OpeningChallenge>;
   nextTurn(request: NextTurnRequest): Promise<NextTurn>;
+  coveredAssertions(request: RecallCheckRequest): Promise<string[]>;
 }
 
 export interface JudgeReport {

@@ -27,12 +27,13 @@ npm run coach -- <command>
 
 ## Options
 
-| Option               | Meaning                                                                      |
-| -------------------- | ---------------------------------------------------------------------------- |
-| `--style <style>`    | Coach in this style for this run. See [Coaching styles](coaching-styles.md). |
-| `--config <file>`    | Use a different configuration file.                                          |
-| `--today YYYY-MM-DD` | Pretend it's another day, e.g. to see what will be due next week.            |
-| `--help`, `-h`       | Show the command list.                                                       |
+| Option               | Meaning                                                                                                                                                                                                 |
+| -------------------- | ------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| `--style <style>`    | Coach in this style for this run. See [Coaching styles](coaching-styles.md).                                                                                                                            |
+| `--free-recall`      | With `spar`: open each concept note by writing down everything you remember about it, with the note closed. The coach then asks only about what you missed. See [Free recall](glossary.md#free-recall). |
+| `--config <file>`    | Use a different configuration file.                                                                                                                                                                     |
+| `--today YYYY-MM-DD` | Pretend it's another day, e.g. to see what will be due next week.                                                                                                                                       |
+| `--help`, `-h`       | Show the command list.                                                                                                                                                                                  |
 
 ## While you answer
 
