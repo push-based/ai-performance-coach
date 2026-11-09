@@ -338,3 +338,17 @@ export const WriteStructureResult = z.object({
   executed: z.boolean(),
 });
 export type WriteStructureResult = z.infer<typeof WriteStructureResult>;
+
+export const ReadingNotesResult = WriteStructureResult.extend({
+  entries: z
+    .array(z.object({ text: z.string(), quote: z.boolean() }))
+    .optional()
+    .default([]),
+});
+export type ReadingNotesResult = z.infer<typeof ReadingNotesResult>;
+
+export const WriteSummaryResult = z.object({
+  warnings: z.array(z.string()).optional().default([]),
+  executed: z.boolean(),
+});
+export type WriteSummaryResult = z.infer<typeof WriteSummaryResult>;

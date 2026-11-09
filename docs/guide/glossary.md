@@ -54,6 +54,10 @@ The folder layout of your vault: Projects, Areas, Resources, Archive, plus an In
 
 Converted books and other sources under `3.Resources/0.Raw/`. You read, mark and quote them, but never spar them directly.
 
+## Read
+
+The first step of the [climb](#climb): reading [raw material](#raw-material) and writing down, in your own words, what resonated, then summing the chapter up. `coach read` takes you through a chapter page by page. A note that copies six words in a row from the page is a quote, and only your own words count.
+
 ## Review
 
 Coming back to an idea when it's due. A new idea comes back the next day. Each pass pushes the next review further out; a fail brings it back tomorrow. When several ideas are due, their topics are mixed.

@@ -20,8 +20,11 @@ import {
   type RecordedSession,
   type SessionDraft,
   type SessionLog,
+  type ReadingNotesCheck,
+  type ReadingNotesInput,
   type StructureCheck,
   type StructureInput,
+  type SummaryCheck,
   type VaultFiling,
 } from '@ai-coach/application';
 import {
@@ -329,6 +332,41 @@ export class McpVault
         state,
       })),
     }));
+  }
+
+  async addReadingNotes(
+    input: ReadingNotesInput,
+    execute: boolean,
+    versions?: Record<string, string>,
+  ): Promise<ReadingNotesCheck> {
+    const result = await this.client
+      .addReadingNotes({
+        chapter: input.chapter,
+        ...(input.page !== null ? { page: input.page } : {}),
+        notes: input.notes,
+        execute,
+        ...(versions ? { versions } : {}),
+      })
+      .catch(translate);
+    return {
+      path: result.path,
+      entries: result.entries,
+      warnings: result.warnings,
+      climbs: result.climbs.map((c) => c.path),
+      versions: result.versions,
+      executed: result.executed,
+    };
+  }
+
+  async writeSummary(
+    chapter: string,
+    text: string,
+    execute: boolean,
+  ): Promise<SummaryCheck> {
+    const result = await this.client
+      .writeSummary({ path: chapter, text, execute })
+      .catch(translate);
+    return { warnings: result.warnings, executed: result.executed };
   }
 
   async writeStructure(

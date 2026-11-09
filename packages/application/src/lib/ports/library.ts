@@ -59,8 +59,38 @@ export interface StructureCheck {
   executed: boolean;
 }
 
+export interface ReadingNotesInput {
+  chapter: string;
+  page: number | null;
+  notes: string[];
+}
+
+export interface ReadingNotesCheck {
+  path: string | null;
+  entries: { text: string; quote: boolean }[];
+  warnings: string[];
+  climbs: string[];
+  versions: Record<string, string>;
+  executed: boolean;
+}
+
+export interface SummaryCheck {
+  warnings: string[];
+  executed: boolean;
+}
+
 export interface Library {
   readingProgress(book?: string): Promise<BookProgress[]>;
+  addReadingNotes(
+    input: ReadingNotesInput,
+    execute: boolean,
+    versions?: Record<string, string>,
+  ): Promise<ReadingNotesCheck>;
+  writeSummary(
+    chapter: string,
+    text: string,
+    execute: boolean,
+  ): Promise<SummaryCheck>;
   writeStructure(
     input: StructureInput,
     execute: boolean,

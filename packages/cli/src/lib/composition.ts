@@ -17,6 +17,7 @@ import {
   Elaborating,
   Generating,
   Grouping,
+  Reading,
   Synthesizing,
   Filing,
   Judging,
@@ -46,6 +47,7 @@ export interface Coach {
   generating(): Generating;
   elaborating(): Elaborating;
   grouping(): Grouping;
+  reading(): Reading;
   close(): Promise<void>;
 }
 
@@ -126,6 +128,8 @@ export async function composeCoach(
         includeAssertions: config.judge.includeAssertions,
       }),
     climbing: () => new Climbing(vault),
+    reading: () =>
+      new Reading({ notes: vault, library: vault, rules: config.sparring }),
     grouping: () =>
       new Grouping({
         notes: vault,

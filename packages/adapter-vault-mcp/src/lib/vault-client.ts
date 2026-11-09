@@ -16,8 +16,10 @@ import {
   RecordSessionResult,
   SearchResult,
   Tier2Payload,
+  ReadingNotesResult,
   VaultGraphResult,
   WriteStructureResult,
+  WriteSummaryResult,
   type BucketFilter,
   type ParaBucket,
   type Tier,
@@ -172,6 +174,25 @@ export class VaultClient {
 
   dueForReview(args: { today?: string } = {}): Promise<DueForReviewResult> {
     return this.call('due_for_review', args, DueForReviewResult);
+  }
+
+  addReadingNotes(args: {
+    chapter: string;
+    page?: number;
+    notes: string[];
+    execute?: boolean;
+    versions?: Record<string, string>;
+  }): Promise<ReadingNotesResult> {
+    return this.call('add_reading_notes', args, ReadingNotesResult);
+  }
+
+  writeSummary(args: {
+    path: string;
+    text: string;
+    page?: number;
+    execute?: boolean;
+  }): Promise<WriteSummaryResult> {
+    return this.call('write_summary', args, WriteSummaryResult);
   }
 
   writeStructure(args: {
