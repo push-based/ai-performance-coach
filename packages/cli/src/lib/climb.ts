@@ -1,4 +1,4 @@
-import type { ConceptClimb } from '@ai-coach/application';
+import type { ClimbStatus } from '@ai-coach/application';
 import { CLIMB_STEPS, type ClimbStep } from '@ai-coach/domain';
 import type { Coach } from './composition.js';
 import type { CommandOptions } from './commands.js';
@@ -22,12 +22,12 @@ function command(step: ClimbStep, path: string): string | null {
   return null;
 }
 
-function stepLabel(c: ConceptClimb, step: ClimbStep): string {
+function stepLabel(c: ClimbStatus, step: ClimbStep): string {
   if (!c.steps[step]) return paint('dim', `· ${LABEL[step]}`);
   return paint(step === 'teach' ? 'yellow' : 'green', `✓ ${LABEL[step]}`);
 }
 
-function nextLine(c: ConceptClimb): string {
+function nextLine(c: ClimbStatus): string {
   const parts: string[] = [];
   if (c.next === null) parts.push('all seven steps done');
   else if (c.next === 'teach' && !c.teach.ok) parts.push(c.teach.reason!);
@@ -37,10 +37,12 @@ function nextLine(c: ConceptClimb): string {
   }
   if (c.skipped.length)
     parts.push(c.skipped.map((s) => `${LABEL[s]} skipped`).join(', '));
+  if (c.waitingForJudge)
+    parts.push('a round waits for the judge: `coach judge`');
   return parts.join(' · ');
 }
 
-export function stairs(c: ConceptClimb, width = TITLE_WIDTH): string[] {
+export function stairs(c: ClimbStatus, width = TITLE_WIDTH): string[] {
   const indent = ' '.repeat(width + 1);
   return [
     `${c.title.padEnd(width)} ${CLIMB_STEPS.map((s) => stepLabel(c, s)).join('  ')}`,

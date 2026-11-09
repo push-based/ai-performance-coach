@@ -155,4 +155,10 @@ export async function read(
   }
   for (const path of await session.record(plan))
     term.print(paint('green', `Wrote ${path}.`));
+  term.print(
+    paint(
+      'dim',
+      `Next: bold and highlight what matters in Obsidian, or turn it into concept notes with coach synthesize ${JSON.stringify(session.book)}`,
+    ),
+  );
 }

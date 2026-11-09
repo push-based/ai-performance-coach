@@ -123,7 +123,9 @@ describe('Synthesizing', () => {
 
   it('asks at most two gap questions and always why the idea matters, and drafts at most six assertions', async () => {
     const { synthesizing, partner } = setup();
-    const idea = (await synthesizing.ideas(await synthesizing.gather(BOOK)))[0]!;
+    const idea = (
+      await synthesizing.ideas(await synthesizing.gather(BOOK))
+    )[0]!;
     partner.questions = ['Why bold first?', ' ', 'What then?', 'And then?'];
     await expect(synthesizing.questions(idea, 'My summary.')).resolves.toEqual([
       'Why bold first?',
@@ -228,5 +230,90 @@ describe('Synthesizing', () => {
       synthesizing.preview({ ...draft, assertions: ['A claim.'] }),
     ).rejects.toThrow(VaultRefusedError);
     expect(library.created).toEqual([]);
+  });
+
+  it('turns a chapter read with coach read into the same quotes as one marked in Obsidian', async () => {
+    const { vault, synthesizing } = setup();
+    const chapter = `${FOLDER}/chapters/08 Read.md`;
+    const notes = '3.Resources/Reading notes/Building a Second Brain/Read.md';
+    vault.put(
+      chapter,
+      [
+        '> [!summary]',
+        '> Read slowly and keep little.',
+        '',
+        '## Page 150',
+        'A design system starts from named values for colour, spacing and type, and grows from there.',
+      ].join('\n'),
+      { rawRole: 'chapter' },
+    );
+    vault.put(
+      notes,
+      [
+        '# Reading notes: Read',
+        '',
+        `From [[${chapter.replace(/\.md$/, '')}|Building a Second Brain, Read]].`,
+        '',
+        '## Page 150',
+        `- 2026-11-09 · one source of truth for every layer — [[${chapter.replace(/\.md$/, '')}#Page 150|p. 150]]`,
+        `- 2026-11-09 · “named values for colour, spacing and type” (quote) — [[${chapter.replace(/\.md$/, '')}#Page 150|p. 150]]`,
+        `- 2026-11-09 · “a quote that is nowhere in the book at all” (quote) — [[${chapter.replace(/\.md$/, '')}#Page 150|p. 150]]`,
+      ].join('\n'),
+    );
+    const book: BookProgress = {
+      ...BOOK,
+      notes: [notes],
+      chapters: [
+        { path: chapter, title: 'Read', summary: true, state: 'complete' },
+      ],
+    };
+    const material = await synthesizing.gather(book);
+    expect(material.map((m) => [m.kind, m.text, m.note, m.page])).toEqual([
+      ['summary', 'Read slowly and keep little.', chapter, null],
+      ['note', 'one source of truth for every layer', notes, 150],
+      ['highlight', 'named values for colour, spacing and type', chapter, 150],
+      ['note', 'a quote that is nowhere in the book at all', notes, 150],
+    ]);
+    const passages = await synthesizing.passages(
+      { title: 'Tokens', items: material },
+      book,
+    );
+    expect(passages).toEqual([
+      {
+        note: chapter,
+        quote: 'named values for colour, spacing and type',
+        pages: '150',
+      },
+    ]);
+    const check = await synthesizing.preview(
+      synthesizing.draft({
+        title: 'Tokens',
+        summary: 'Named values are the base layer.',
+        assertions: ['Every layer takes its values from tokens.'],
+        buzzwords: [],
+        passages,
+        fromNotes: [notes],
+      }),
+    );
+    expect(check.passages.every((p) => p.found)).toBe(true);
+  });
+
+  it('finds the chapter of a quote kept in a paper reading note', async () => {
+    const { vault, synthesizing } = setup();
+    vault.put(
+      READING,
+      [
+        '- "Share intermediate packets with others early."',
+        '- my own take on **packets**',
+      ].join('\n'),
+    );
+    const material = await synthesizing.gather(BOOK);
+    expect(
+      material.slice(4).map((m) => [m.kind, m.text, m.note, m.page]),
+    ).toEqual([
+      ['highlight', 'Share intermediate packets with others early.', CH6, 120],
+      ['note', 'packets', READING, null],
+      ['note', 'my own take on packets', READING, null],
+    ]);
   });
 });

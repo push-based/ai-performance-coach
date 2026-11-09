@@ -22,6 +22,7 @@ export const EXCLUDE = ['docs/adr/template.md', '**/node_modules/**'];
 export const GUIDE = [
   'setup',
   'first-session',
+  'the-climb',
   'commands',
   'coaching-styles',
   'configuration',

@@ -145,7 +145,9 @@ describe('coach synthesize', () => {
     );
     expect(text).toContain('Why bold before you highlight?');
     expect(text).toContain('found');
-    expect(text).toContain('1 concept note(s) written.');
+    expect(text).toContain(
+      '1 concept note(s) written. Next: group them with coach group "Building a Second Brain", or spar them with coach spar.',
+    );
   });
 
   it('writes nothing when the learner declines the preview', async () => {

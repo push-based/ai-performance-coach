@@ -37,6 +37,8 @@ _(An illustration: the questions depend on your note and the model.)_
 4. **Judge:** an online model (Gemini) checks your answers for gaps. It sees only the questions and your answers, never your notes.
 5. **Study** what you missed, then **review** when the idea is due. Ideas you know well come back less often.
 
+Sparring and review are two steps of a longer [climb](docs/guide/the-climb.md): seven steps from "I've read it" to "I can teach it", each with its own command.
+
 The same vault can also hold your plans: [Claude Code skills](.claude/skills/README.md) plan your year down to your day.
 
 ## Quick start
@@ -59,6 +61,7 @@ The [setup guide](docs/guide/setup.md) explains each step, and [your first sessi
 | ------------------------------ | --------------------------------------------------------------------------------- |
 | Install and connect everything | [Setup](docs/guide/setup.md)                                                      |
 | Try the loop on a real book    | [Your first session](docs/guide/first-session.md)                                 |
+| Go from familiar to mastered   | [The climb](docs/guide/the-climb.md)                                              |
 | Look up a command or a setting | [Commands](docs/guide/commands.md) · [Configuration](docs/guide/configuration.md) |
 | Pick how the coach pushes me   | [Coaching styles](docs/guide/coaching-styles.md)                                  |
 | Know what leaves my machine    | [Privacy](docs/guide/privacy.md)                                                  |

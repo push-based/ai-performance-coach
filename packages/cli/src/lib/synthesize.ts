@@ -274,7 +274,7 @@ export async function synthesize(
   const material = await synthesizing.gather(book);
   if (!material.length) {
     term.print(
-      `Nothing marked in ${book.title} yet: bold or highlight passages, or write a chapter summary, then come back.`,
+      `Nothing marked in ${book.title} yet: read a chapter with coach read, or bold and highlight passages in Obsidian, then come back.`,
     );
     return;
   }
@@ -297,14 +297,15 @@ export async function synthesize(
   let written = 0;
   try {
     for (const n of numbers(raw, ideas.length)) {
-      if (await synthesizeIdea(synthesizing, term, book, ideas[n - 1]!)) written++;
+      if (await synthesizeIdea(synthesizing, term, book, ideas[n - 1]!))
+        written++;
     }
   } catch (err) {
     if (!(err instanceof Quit)) throw err;
   }
   term.print(
     written
-      ? `${written} concept note(s) written. Spar them with coach spar.`
+      ? `${written} concept note(s) written. Next: group them with coach group ${JSON.stringify(book.title)}, or spar them with coach spar.`
       : 'No concept note written.',
   );
 }

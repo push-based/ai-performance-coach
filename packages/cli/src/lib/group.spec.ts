@@ -94,6 +94,7 @@ describe('coach group', () => {
       concepts: ['3.Resources/Concepts/Design tokens.md'],
     });
     expect(written[1]!.input.buildsOn).toHaveLength(3);
+    expect(term.text()).toContain('See the climb: coach climb');
   });
 
   it('shows the rule broken and asks again, then asks the questions and lets the learner revise', async () => {

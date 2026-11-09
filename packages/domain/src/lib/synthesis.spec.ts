@@ -1,6 +1,8 @@
 import {
   conceptDraft,
   extractMarks,
+  extractNoteItems,
+  quotable,
   quotesFrom,
   type MaterialItem,
 } from './synthesis.js';
@@ -194,5 +196,98 @@ describe('conceptDraft', () => {
     expect(() =>
       conceptDraft({ ...valid, passages: [{ note: 'x', quote: 'tiny' }] }),
     ).toThrow(/at least 12/);
+  });
+});
+
+describe('extractNoteItems', () => {
+  const CH =
+    '3.Resources/0.Raw/Books/Brad Frost/Atomic Design/chapters/02 Tokens';
+
+  it('reads the reading notes coach read writes, page by page, with kept quotes as highlights', () => {
+    const body = [
+      '---',
+      'type: reading-notes',
+      `chapter: "${CH}.md"`,
+      '---',
+      '',
+      '# Reading notes: Tokens',
+      '',
+      `From [[${CH}|Atomic Design, Tokens]].`,
+      '',
+      '## Page 1',
+      `- 2026-11-09 · one source of truth for every layer — [[${CH}#Page 1|p. 1]]`,
+      `- 2026-11-09 · “named values for colour, spacing and type” (quote) — [[${CH}#Page 1|p. 1]]`,
+      '',
+      '## Notes',
+      `- 2026-11-10 · tokens are the contract between design and code — [[${CH}|Tokens]]`,
+    ].join('\n');
+    expect(extractNoteItems(body)).toEqual([
+      {
+        kind: 'note',
+        text: 'one source of truth for every layer',
+        page: 1,
+        source: `${CH}.md`,
+      },
+      {
+        kind: 'highlight',
+        text: 'named values for colour, spacing and type',
+        page: 1,
+        source: `${CH}.md`,
+      },
+      {
+        kind: 'note',
+        text: 'tokens are the contract between design and code',
+        page: null,
+        source: `${CH}.md`,
+      },
+    ]);
+  });
+
+  it('reads a freeform paper note with bullets, prose, bolds, highlights and a summary', () => {
+    const body = [
+      '> [!summary]',
+      '> Tokens hold the values; components only point at them.',
+      '',
+      'Read on paper on the train, see [[Design systems]].',
+      '',
+      '- a **token is a name** for a value',
+      '- ==every layer reads from the tokens==',
+      '- "Every other layer reads its values from the tokens"',
+    ].join('\n');
+    expect(extractNoteItems(body)).toEqual([
+      {
+        kind: 'summary',
+        text: 'Tokens hold the values; components only point at them.',
+        page: null,
+      },
+      {
+        kind: 'note',
+        text: 'Read on paper on the train, see Design systems.',
+        page: null,
+      },
+      { kind: 'bold', text: 'token is a name', page: null },
+      { kind: 'note', text: 'a token is a name for a value', page: null },
+      {
+        kind: 'highlight',
+        text: 'every layer reads from the tokens',
+        page: null,
+      },
+      {
+        kind: 'highlight',
+        text: 'Every other layer reads its values from the tokens',
+        page: null,
+      },
+    ]);
+  });
+
+  it('cuts a long paragraph to a note excerpt', () => {
+    const [item] = extractNoteItems('word '.repeat(400));
+    expect(item!.kind).toBe('note');
+    expect(item!.text.length).toBe(800);
+  });
+
+  it('tells a quotable passage from a fragment', () => {
+    expect(quotable('named values for colour, spacing')).toBe(true);
+    expect(quotable('token is a name')).toBe(false);
   });
 });

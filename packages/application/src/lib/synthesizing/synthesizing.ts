@@ -5,6 +5,10 @@ import {
   WHY_IT_MATTERS,
   conceptDraft,
   extractMarks,
+  extractNoteItems,
+  fold,
+  locateQuote,
+  quotable,
   quotesFrom,
   type ConceptDraft,
   type ConceptPassageDraft,
@@ -12,7 +16,8 @@ import {
   type MaterialItem,
   type SparringRules,
 } from '@ai-coach/domain';
-import { NotFoundError, UnusableReplyError } from '../errors.js';
+import { findBook } from '../books.js';
+import { UnusableReplyError } from '../errors.js';
 import type {
   BookProgress,
   ConceptCheck,
@@ -20,7 +25,7 @@ import type {
   IdeaProposal,
   Library,
 } from '../ports/library.js';
-import type { NotesRepository } from '../ports/vault.js';
+import type { NoteDetails, NotesRepository } from '../ports/vault.js';
 
 export interface Idea {
   title: string;
@@ -36,13 +41,30 @@ export interface SynthesizingDeps {
 
 const MAX_IDEAS = 6;
 const MAX_QUESTIONS = 2;
-const NOTE_EXCERPT = 800;
+
+interface Located {
+  path: string;
+  title: string;
+  page: number | null;
+}
+
+type Item = Omit<MaterialItem, 'id'>;
 
 function quoteFromSnippet(snippet: string): string | null {
   const trimmed = snippet.replace(/^…\s*/, '').replace(/\s*…$/, '').trim();
   const sentences = trimmed.match(/[A-Z][^.!?]*[.!?]/g) ?? [];
   const best = sentences.sort((a, b) => b.length - a.length)[0] ?? trimmed;
   return best.length >= MIN_QUOTE ? best.trim() : null;
+}
+
+function unique(items: readonly Item[]): Item[] {
+  const seen = new Set<string>();
+  return items.filter((item) => {
+    const key = [item.kind, item.note, fold(item.text)].join('\u0000');
+    if (seen.has(key)) return false;
+    seen.add(key);
+    return true;
+  });
 }
 
 export class Synthesizing {
@@ -52,46 +74,62 @@ export class Synthesizing {
     return this.deps.library.readingProgress();
   }
 
-  async book(ref: string): Promise<BookProgress> {
-    const wanted = ref.trim().replace(/\/+$/, '').toLowerCase();
-    const books = await this.deps.library.readingProgress();
-    const found = books.find(
-      (b) =>
-        b.index.toLowerCase() === wanted ||
-        b.folder.toLowerCase() === wanted ||
-        b.title.toLowerCase() === wanted,
-    );
-    if (!found) {
-      throw new NotFoundError(
-        `No converted book matches "${ref}"; known books: ${books.map((b) => b.title).join(', ') || 'none'}`,
-      );
-    }
-    return found;
+  book(ref: string): Promise<BookProgress> {
+    return findBook(this.deps.library, ref);
   }
 
   async gather(book: BookProgress): Promise<MaterialItem[]> {
-    const items: Omit<MaterialItem, 'id'>[] = [];
-    for (const chapter of book.chapters.filter(
-      (c) => c.state !== 'untouched',
-    )) {
-      const note = await this.deps.notes.readNote(chapter.path);
-      for (const mark of extractMarks(note.body)) {
-        items.push({ ...mark, note: chapter.path, chapter: chapter.title });
-      }
+    const read = new Map<string, Promise<NoteDetails>>();
+    const chapter = (path: string) => {
+      if (!read.has(path)) read.set(path, this.deps.notes.readNote(path));
+      return read.get(path)!;
+    };
+    const items: Item[] = [];
+    for (const c of book.chapters.filter((c) => c.state !== 'untouched')) {
+      for (const mark of extractMarks((await chapter(c.path)).body))
+        items.push({ ...mark, note: c.path, chapter: c.title });
     }
     for (const path of book.notes) {
       const note = await this.deps.notes.readNote(path);
-      const text = note.body.replace(/\s+/g, ' ').trim().slice(0, NOTE_EXCERPT);
-      if (text)
-        items.push({
-          kind: 'note',
-          text,
-          note: path,
-          chapter: note.title,
-          page: null,
-        });
+      for (const { source, ...item } of extractNoteItems(note.body)) {
+        const own = { note: path, chapter: note.title };
+        if (item.kind !== 'highlight' && item.kind !== 'bold') {
+          items.push({ ...item, ...own });
+          continue;
+        }
+        const quote = item.within ?? item.text;
+        const found = quotable(quote)
+          ? await this.locate(quote, book, chapter, source)
+          : null;
+        items.push(
+          found
+            ? {
+                ...item,
+                page: found.page ?? item.page,
+                note: found.path,
+                chapter: found.title,
+              }
+            : { kind: 'note', text: item.text, page: item.page, ...own },
+        );
+      }
     }
-    return items.map((item, i) => ({ ...item, id: i + 1 }));
+    return unique(items).map((item, i) => ({ ...item, id: i + 1 }));
+  }
+
+  private async locate(
+    quote: string,
+    book: BookProgress,
+    chapter: (path: string) => Promise<NoteDetails>,
+    hint?: string,
+  ): Promise<Located | null> {
+    const ordered = [...book.chapters].sort(
+      (a, b) => Number(b.path === hint) - Number(a.path === hint),
+    );
+    for (const c of ordered) {
+      const section = locateQuote(quote, (await chapter(c.path)).body);
+      if (section) return { path: c.path, title: c.title, page: section.page };
+    }
+    return null;
   }
 
   async ideas(material: readonly MaterialItem[]): Promise<Idea[]> {

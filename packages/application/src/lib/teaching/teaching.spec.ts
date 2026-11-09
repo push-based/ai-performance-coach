@@ -12,6 +12,7 @@ import {
   ScriptedTeachPartner,
 } from '../../testing/in-memory.js';
 import { NotSparrableError, UnavailableError } from '../errors.js';
+import { JUDGE_FAILED } from '../history.js';
 import { Teaching } from './teaching.js';
 
 const TOKENS = '3.Resources/Concepts/Design tokens.md';
@@ -64,7 +65,43 @@ function setup(open = true) {
   return { vault, teacher, checker, library, teaching };
 }
 
+async function round(
+  vault: InMemoryVault,
+  tier: 1 | 2,
+  verdict: 'pass' | 'fail',
+) {
+  await vault.record(
+    {
+      tier,
+      date: '2026-11-16',
+      items: [
+        {
+          note: { path: TOKENS },
+          challenge: 'What is a token?',
+          answer: 'A named value.',
+          verdict,
+          gaps: [],
+          nextReview: '2026-11-30',
+        },
+      ],
+    },
+    true,
+  );
+}
+
 describe('Teaching', () => {
+  it('refuses a concept whose latest round the judge failed, until it is passed again', async () => {
+    const { vault, teacher, teaching } = setup();
+    await round(vault, 1, 'pass');
+    await round(vault, 2, 'fail');
+    await expect(teaching.open(TOKENS)).rejects.toThrow(
+      new NotSparrableError(JUDGE_FAILED),
+    );
+    await round(vault, 1, 'pass');
+    teacher.replies.push({ assertion: 1, text: "primitives don't use tokens" });
+    await expect(teaching.open(TOKENS)).resolves.toBeDefined();
+  });
+
   it('refuses a concept without a passed spaced review, with the vault reason', async () => {
     const { teaching } = setup(false);
     await expect(teaching.open('Design tokens')).rejects.toThrow(
