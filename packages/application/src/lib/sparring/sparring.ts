@@ -61,7 +61,7 @@ export class Sparring {
       ...report.due.map((n) => ({
         path: n.path,
         title: n.title,
-        reason: `${n.concept ? 'concept, ' : ''}due ${n.nextReview}, ${n.mastery}`,
+        reason: `${n.concept ? 'concept, ' : ''}${n.firstReview ? 'first review' : `due ${n.nextReview}, ${n.mastery}`}${n.group ? `, ${n.group}` : ''}`,
       })),
       ...report.unsparred.map((n) => ({
         path: n.path,
@@ -126,6 +126,7 @@ export class Sparring {
             gaps: result.gaps.length,
             date: today,
             tier2History: tier2History(note),
+            first: !note.sessions.some((s) => s.tier === 1),
           },
           this.deps.ladder,
         ).nextReview,

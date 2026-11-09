@@ -233,12 +233,12 @@ describe('coaching use cases against in-memory adapters', () => {
     ).rejects.toBeInstanceOf(NotSparrableError);
   });
 
-  it('records Tier 1 with a 3-day review and queues it for the judge', async () => {
+  it('records a first Tier 1 pass for tomorrow, a later one in 3 days, and queues it for the judge', async () => {
     const s = setup();
     const recorded = await sparOnce(s, EVENT_LOOP, 'pass', '2026-10-24');
     expect(recorded.items[0]).toMatchObject({
       verdict: 'pass',
-      nextReview: '2026-10-27',
+      nextReview: '2026-10-25',
     });
     expect(s.pending.sessions).toEqual([
       {
@@ -249,6 +249,8 @@ describe('coaching use cases against in-memory adapters', () => {
       },
     ]);
     expect((await s.review.due('2026-10-24')).waitingForJudge).toBe(1);
+    const again = await sparOnce(s, EVENT_LOOP, 'pass', '2026-10-25');
+    expect(again.items[0]).toMatchObject({ nextReview: '2026-10-28' });
   });
 
   it('judges only the payload, enforces the verdict rule, schedules from history and clears the queue', async () => {

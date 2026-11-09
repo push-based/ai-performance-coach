@@ -50,6 +50,7 @@ const ConfigFile = z.strictObject({
     .optional(),
   ladder: z
     .strictObject({
+      firstReviewDays: z.number().optional(),
       failDays: z.number().optional(),
       tier1PassDays: z.number().optional(),
       tier2PassDays: z.array(z.number()).optional(),

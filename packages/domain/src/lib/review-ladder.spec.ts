@@ -51,6 +51,57 @@ describe('Tier 1', () => {
   });
 });
 
+describe('the first review', () => {
+  it('brings a first Tier 1 pass back tomorrow, not in 3 days', () => {
+    expect(
+      scheduleReview({
+        tier: 1,
+        verdict: 'pass',
+        gaps: 0,
+        date: DATE,
+        tier2History: [],
+        first: true,
+      }),
+    ).toEqual({ nextReview: '2026-10-25', intervalDays: 1, rung: -1 });
+  });
+
+  it('keeps a first fail on the fail interval, and a later pass on 3 days', () => {
+    const ladder = { ...DEFAULT_LADDER, firstReviewDays: 2, failDays: 1 };
+    expect(
+      scheduleReview(
+        {
+          tier: 1,
+          verdict: 'fail',
+          gaps: 1,
+          date: DATE,
+          tier2History: [],
+          first: true,
+        },
+        ladder,
+      ).intervalDays,
+    ).toBe(1);
+    expect(
+      scheduleReview(
+        {
+          tier: 1,
+          verdict: 'pass',
+          gaps: 0,
+          date: DATE,
+          tier2History: [],
+          first: false,
+        },
+        ladder,
+      ).intervalDays,
+    ).toBe(3);
+  });
+
+  it('rejects a first review interval under a day', () => {
+    expect(() =>
+      validateLadder({ ...DEFAULT_LADDER, firstReviewDays: 0 }),
+    ).toThrow(DomainError);
+  });
+});
+
 describe('Tier 2', () => {
   it('climbs 7, 14, 30, 60 days with consecutive passes', () => {
     const history: Tier2Outcome[] = [];
@@ -145,7 +196,12 @@ describe('Tier 2', () => {
 
 describe('ladder configuration', () => {
   it('accepts a custom ladder', () => {
-    const ladder = { failDays: 2, tier1PassDays: 4, tier2PassDays: [5, 10] };
+    const ladder = {
+      firstReviewDays: 1,
+      failDays: 2,
+      tier1PassDays: 4,
+      tier2PassDays: [5, 10],
+    };
     expect(
       scheduleReview(
         {

@@ -44,7 +44,7 @@ Converted books and other sources under `3.Resources/0.Raw/`. You read, mark and
 
 ## Review
 
-Coming back to an idea when it's due. Each pass pushes the next review further out; a fail brings it back tomorrow.
+Coming back to an idea when it's due. A new idea comes back the next day. Each pass pushes the next review further out; a fail brings it back tomorrow. When several ideas are due, their topics are mixed.
 
 ## Session
 

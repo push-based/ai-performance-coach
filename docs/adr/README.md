@@ -41,3 +41,4 @@ Every important or major change to ai-coach ships with an ADR in this folder; AD
 | [0035](0035-keep-day-plans-in-a-folder-per-month.md)                              | Keep day plans in a folder per month                                                             | proposed               |
 | [0036](0036-fix-ticked-tasks-with-update-task-and-place-tasks-by-heading-path.md) | Fix ticked tasks with update_task, and place tasks by heading path                               | proposed               |
 | [0037](0037-track-the-climb-of-seven-learning-steps-per-concept.md)               | Track the climb of seven learning steps on each concept note                                     | proposed               |
+| [0038](0038-review-a-new-idea-the-next-day-and-mix-topics-in-the-due-queue.md)    | Review a new idea the next day, and mix topics in the due queue                                  | proposed               |

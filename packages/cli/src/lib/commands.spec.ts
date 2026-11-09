@@ -1,6 +1,6 @@
 import { stripVTControlCharacters } from 'node:util';
 import type { FilingPlan, FilingRequest } from '@ai-coach/application';
-import { archive } from './commands.js';
+import { archive, due } from './commands.js';
 import type { Coach } from './composition.js';
 import type { Terminal } from './terminal.js';
 
@@ -104,5 +104,53 @@ describe('coach archive', () => {
       'Talk',
     ]);
     expect(applied).toEqual([]);
+  });
+});
+
+describe('coach due', () => {
+  it('marks a concept on its first review and names its group', async () => {
+    const term = new ScriptedTerminal([]);
+    const coach = {
+      clock: { today: () => '2026-11-10' },
+      review: {
+        due: async () => ({
+          today: '2026-11-10',
+          due: [
+            {
+              path: '3.Resources/Concepts/Design tokens.md',
+              title: 'Design tokens',
+              concept: true,
+              coachId: null,
+              nextReview: '2026-11-10',
+              mastery: 'unsparred',
+              firstReview: true,
+              book: 'Design System Architecture',
+              group: 'Tokens',
+            },
+            {
+              path: '3.Resources/Concepts/Primitives.md',
+              title: 'Primitives',
+              concept: true,
+              coachId: 'c-2',
+              nextReview: '2026-11-09',
+              mastery: 'attempted',
+              book: 'Design System Architecture',
+              group: null,
+            },
+          ],
+          unsparred: [],
+          orphaned: [],
+          invalidSessions: [],
+          waitingForJudge: 0,
+        }),
+      },
+    } as unknown as Coach;
+    await due(coach, term);
+    expect(term.text()).toContain(
+      'Design tokens first review 2026-11-10  Tokens',
+    );
+    expect(term.text()).toContain(
+      'Primitives attempted 2026-11-09  Design System Architecture  c-2',
+    );
   });
 });
