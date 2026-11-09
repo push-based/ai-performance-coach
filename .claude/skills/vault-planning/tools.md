@@ -6,7 +6,7 @@ The server is registered in Claude Code as `life-vault` (see `.claude/skills/REA
 
 Every write tool previews unless given `execute: true` (kb-template ADR-KI-0064):
 
-1. Call it without `execute`. The preview lists each changed line as a before and after, the notes it creates, warnings, and `versions`: a hash of each existing note it would change.
+1. Call it without `execute`. The preview lists each changed line as a before and after, the notes it creates, warnings, and `versions`: a hash of each existing note it would change. Each changed line carries `line` (0-based in the body, the same numbering `planning_overview` reports and `line` addresses accept; absent for a frontmatter change and for a note being created), `fileLine` (1-based in the file, for showing the user only, never passed back), and `under` (the heading above it) and `above` (the line above it) when there is one. Show the user `under` and `above` so they can see where a line lands.
 2. Show the user the preview and wait for their yes.
 3. Call it again with the **same arguments**, `execute: true`, and the preview's `versions` passed back unchanged. **Always pass `versions`.** Without them the write still runs, unchecked, with a warning; `update_task` with a task addressed by `line` refuses to run at all.
 4. If the execute is refused because a note changed since its preview (the user edited it in Obsidian meanwhile), preview again, show the new before and after, and ask again.
@@ -127,7 +127,8 @@ Each day is planned as `plan_period` plans a day, and missing day plans are crea
 ```
 
 - `note` is an existing project, workstream, area or plan note. Not an Intermediate Packet, not an archived project.
-- Where: `heading` puts the tasks at the end of that section (created when missing); `parent` (`{line}`, `{blockId}` or `{task}`, as in `update_task`) indents them under an existing task as subtasks; neither puts them at the end of the note. `heading` and `parent` together are refused.
+- Where: `heading` puts the tasks after that section's own lines and before its first subheading, so under a `###` with `####` children they land above the children. `parent` (`{line}`, `{blockId}` or `{task}`, as in `update_task`) indents them under an existing task as subtasks. Neither puts them at the end of the note. `heading` and `parent` together are refused.
+- **Heading paths.** A heading that several sections share is refused, with their paths. Give it as a path from the top heading down, such as `"Robotics: Machinekind/Marketing"`. A missing heading, or the missing last part of a path, is created at the end of the section above it (its subsections included), or at the end of the note. `level` (2–6) sets the created heading's level; without it, it is one level below its parent, or 2. For example `"heading": "Keynotes/AI keynote: Jane Doe"` adds a `###` under `## Keynotes`. Sections whose shared name contains `/` cannot be reached by a path: rename one with `edit_note` first.
 - Each task: `text` (the description only; no `#S`, `⏳`, `⏫` or other signifiers in it), `size`, `scheduled`, `links`, `priority`, `recurrence`, `id`, `blockedBy`. In a plan, the first of `links` is the owner.
 - Repeating work: `{"text": "Clean the bathroom", "size": "M", "recurrence": "every week on Saturday", "scheduled": "2026-11-07"}`, only the next date on the line. A habit is `add_habits`, not this.
 - Refuses an `id` already used by a planned task and a `blockedBy` that names no existing `🆔`. Ids are short kebab-case words.
@@ -156,11 +157,12 @@ Each day is planned as `plan_period` plans a day, and missing day plans are crea
 }
 ```
 
-- **Address** each task by `note` and exactly one of: `blockId` (`^id` or `🆔`; best when there is one), `line` (from `planning_overview`; needs `versions` on execute), or `task` (a part of the text matching exactly one open task).
+- **Address** each task by `note` and exactly one of: `blockId` (`^id` or `🆔`; best when there is one), `line` (from `planning_overview` or a preview's `line`; needs `versions` on execute), or `task` (a part of the text matching exactly one open task).
+- **Done and cancelled tasks.** Add `include_closed: true` beside `task` to match done and cancelled tasks too, still exactly one. Use it to fix a ticked task's text, such as a misspelled name: `{note, task: "Graphic for Jane", include_closed: true, set: {text: "Graphic for Jane Doe"}}`. The `[x]`, the `✅` date and every other signifier stay.
 - **`set`** takes `text`, `size`, `priority`, `scheduled`, `state` (`open | done | cancelled`), `parent` (goals only, a goal one level up), `id`, `blockedBy`, `recurrence`. `null` removes a field. Only the fields given change: slip tags, the parent link and the rest of the line stay as they are. `text` replaces the description with its links; size, slip tags and parent link are kept.
 - `done` writes `✅ <today>`; `cancelled` writes `[-]` and `❌ <today>` (a dropped goal counts as dropped, not missed); `open` clears both.
 - **Repeating tasks:** never tick or cancel a `🔁` task with this tool. Tasks writes the next occurrence only when it is ticked in Obsidian, so the tool refuses unless the same update sets `recurrence: null`, which ends it for good. Tell the user to tick it in Obsidian.
-- **Habit checks** in a day plan are plain tasks: tick one with `{note: "Plans/Daily/<day>.md", task: "<habit text>", set: {state: "done"}}`.
+- **Habit checks** in a day plan are plain tasks: tick one with `{note: "Plans/Daily/<year>/<month>/<day>.md", task: "<habit text>", set: {state: "done"}}`.
 - Several updates go in one call, one preview.
 - Goals rolled over before 2026-11-02 may have `⏫` before their `↑` parent link, where Tasks doesn't read it. `update_task` with `priority: "high"` on such a goal rewrites it in the right place.
 
@@ -196,7 +198,7 @@ Changes only the named keys' lines. `status` is `todo | in-progress | blocked | 
 - Exact text: `{ "note", "edits": [{ "old": "<exact text, once in the body>", "new": "<replacement>" }] }`, applied in order.
 - One section: `{ "note", "heading": "Review", "content": "<text>", "mode": "replace" | "append" }`. A missing section is added at the end of the note (with a warning); two sections with the same heading are refused.
 
-For a description, a table column, a project note's text, a plan's `## Review`, a day's `## Log`. Never for task lines (`add_tasks`, `update_task`) or frontmatter (`set_frontmatter`). Refuses `Coach/` and raw text under `3.Resources/0.Raw/`.
+For a description, a table column, a project note's text, a plan's `## Review`, a day's `## Log`, a habit's definition line. It refuses any edit that adds, removes or changes a task line (a checkbox): use `add_tasks`, or `update_task` (with `include_closed: true` for a ticked or cancelled task). Frontmatter goes through `set_frontmatter`. Also refuses `Coach/` and raw text under `3.Resources/0.Raw/`.
 
 ### `create_workstream`
 
