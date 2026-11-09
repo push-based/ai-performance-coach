@@ -47,3 +47,4 @@ Every important or major change to ai-coach ships with an ADR in this folder; AD
 | [0041](0041-elaborate-a-concept-with-a-why-a-connection-and-a-use.md)             | Elaborate a concept with a why, a connection and a use, checked in code                          | proposed               |
 | [0042](0042-group-a-books-concepts-into-the-learners-own-layers.md)               | Group a book's concepts into the learner's own layers, with embedded questions                   | proposed               |
 | [0043](0043-read-a-chapter-page-by-page-and-write-down-what-resonates.md)         | Read a chapter page by page in the terminal, and write down what resonates                       | proposed               |
+| [0044](0044-teach-a-student-that-knows-only-the-title-and-one-misconception.md)   | Teach a student that knows only the title and one misconception                                  | proposed               |

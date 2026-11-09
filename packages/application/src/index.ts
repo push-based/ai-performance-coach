@@ -16,3 +16,4 @@ export * from './lib/elaborating/elaborating.js';
 export * from './lib/grouping/grouping.js';
 export * from './lib/reading/reading.js';
 export * from './lib/books.js';
+export * from './lib/teaching/teaching.js';

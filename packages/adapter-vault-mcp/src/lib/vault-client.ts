@@ -18,6 +18,7 @@ import {
   Tier2Payload,
   ReadingNotesResult,
   RebuildClimbResult,
+  SaveGuidelineResult,
   VaultGraphResult,
   WriteStructureResult,
   WriteSummaryResult,
@@ -194,6 +195,16 @@ export class VaultClient {
     execute?: boolean;
   }): Promise<WriteSummaryResult> {
     return this.call('write_summary', args, WriteSummaryResult);
+  }
+
+  saveGuideline(args: {
+    session_id: string;
+    note?: string;
+    title: string;
+    folder: string;
+    execute?: boolean;
+  }): Promise<SaveGuidelineResult> {
+    return this.call('save_guideline', args, SaveGuidelineResult);
   }
 
   writeStructure(args: {

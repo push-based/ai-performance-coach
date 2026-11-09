@@ -21,6 +21,8 @@ import {
   type RecordedSession,
   type SessionDraft,
   type SessionLog,
+  type GuidelineCheck,
+  type GuidelineInput,
   type ReadingNotesCheck,
   type ReadingNotesInput,
   type StructureCheck,
@@ -382,6 +384,26 @@ export class McpVault
       .writeSummary({ path: chapter, text, execute })
       .catch(translate);
     return { warnings: result.warnings, executed: result.executed };
+  }
+
+  async saveGuideline(
+    input: GuidelineInput,
+    execute: boolean,
+  ): Promise<GuidelineCheck> {
+    const result = await this.client
+      .saveGuideline({
+        session_id: input.sessionId,
+        note: input.note,
+        title: input.title,
+        folder: input.folder,
+        execute,
+      })
+      .catch(translate);
+    return {
+      path: result.path,
+      warnings: result.warnings,
+      executed: result.executed,
+    };
   }
 
   async writeStructure(

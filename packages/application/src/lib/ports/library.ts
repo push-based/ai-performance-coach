@@ -79,6 +79,19 @@ export interface SummaryCheck {
   executed: boolean;
 }
 
+export interface GuidelineInput {
+  sessionId: string;
+  note: string;
+  title: string;
+  folder: string;
+}
+
+export interface GuidelineCheck {
+  path: string | null;
+  warnings: string[];
+  executed: boolean;
+}
+
 export interface Library {
   readingProgress(book?: string): Promise<BookProgress[]>;
   addReadingNotes(
@@ -96,6 +109,10 @@ export interface Library {
     execute: boolean,
     versions?: Record<string, string>,
   ): Promise<StructureCheck>;
+  saveGuideline(
+    input: GuidelineInput,
+    execute: boolean,
+  ): Promise<GuidelineCheck>;
   findPassages(
     query: string,
     options: { within?: string; limit?: number },

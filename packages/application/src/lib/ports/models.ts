@@ -3,6 +3,7 @@ import type {
   ElaborationKind,
   ElaborationQuestions,
   FollowUp,
+  Misconception,
   Exchange,
   ItemJudgement,
   Note,
@@ -107,4 +108,15 @@ export interface FollowUpRequest {
 export interface ElaborationPartner {
   questions(request: ElaborationRequest): Promise<ElaborationQuestions>;
   followUp(request: FollowUpRequest): Promise<FollowUp | null>;
+}
+
+export interface MisconceptionRequest {
+  rules: SparringRules;
+  title: string;
+  assertions: readonly string[];
+  rejected: string[];
+}
+
+export interface TeachPartner {
+  misconception(request: MisconceptionRequest): Promise<Misconception>;
 }

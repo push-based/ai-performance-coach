@@ -6,6 +6,7 @@ import {
 import {
   OllamaElaborationPartner,
   OllamaStructurePartner,
+  OllamaTeachPartner,
   OllamaSynthesisPartner,
   OllamaSparringPartner,
   OllamaStudyPartner,
@@ -18,6 +19,7 @@ import {
   Generating,
   Grouping,
   Reading,
+  Teaching,
   Synthesizing,
   Filing,
   Judging,
@@ -27,6 +29,7 @@ import {
   type Clock,
   type ElaborationPartner,
   type StructurePartner,
+  type TeachPartner,
   type SynthesisPartner,
   type Judge,
   type SparringPartner,
@@ -48,6 +51,7 @@ export interface Coach {
   elaborating(): Elaborating;
   grouping(): Grouping;
   reading(): Reading;
+  teaching(): Teaching;
   close(): Promise<void>;
 }
 
@@ -59,6 +63,7 @@ export interface AdapterOverrides {
   synthesisPartner?: (config: CoachConfig) => SynthesisPartner;
   elaborationPartner?: (config: CoachConfig) => ElaborationPartner;
   structurePartner?: (config: CoachConfig) => StructurePartner;
+  teachPartner?: (config: CoachConfig) => TeachPartner;
 }
 
 export async function composeCoach(
@@ -128,6 +133,19 @@ export async function composeCoach(
         includeAssertions: config.judge.includeAssertions,
       }),
     climbing: () => new Climbing(vault),
+    teaching: () =>
+      new Teaching({
+        notes: vault,
+        sessions: vault,
+        library: vault,
+        teacher:
+          overrides.teachPartner?.(config) ??
+          new OllamaTeachPartner(ollamaOptions(config)),
+        checker: partner(),
+        rules: config.sparring,
+        ladder: config.ladder,
+        clock,
+      }),
     reading: () =>
       new Reading({ notes: vault, library: vault, rules: config.sparring }),
     grouping: () =>
