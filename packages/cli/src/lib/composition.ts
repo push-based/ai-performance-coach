@@ -12,6 +12,7 @@ import {
 import { McpVault } from '@ai-coach/adapter-vault-mcp';
 import {
   Climbing,
+  Generating,
   Synthesizing,
   Filing,
   Judging,
@@ -36,6 +37,7 @@ export interface Coach {
   studying(): Studying;
   synthesizing(): Synthesizing;
   climbing(): Climbing;
+  generating(): Generating;
   close(): Promise<void>;
 }
 
@@ -61,8 +63,13 @@ export async function composeCoach(
     overrides.classifier?.(config) ??
     new OllamaStyleClassifier(ollamaOptions(config));
 
+  const clock = new SystemClock(today);
+  const partner = () =>
+    overrides.partner?.(config) ??
+    new OllamaSparringPartner(ollamaOptions(config), config.ollama.checkModel);
+
   return {
-    clock: new SystemClock(today),
+    clock,
     review: new Review(vault, pending),
     filing: new Filing(vault),
     sparring: () =>
@@ -70,12 +77,7 @@ export async function composeCoach(
         notes: vault,
         sessions: vault,
         pending,
-        partner:
-          overrides.partner?.(config) ??
-          new OllamaSparringPartner(
-            ollamaOptions(config),
-            config.ollama.checkModel,
-          ),
+        partner: partner(),
         classifier: classifier(),
         rules: config.sparring,
         ladder: config.ladder,
@@ -114,6 +116,15 @@ export async function composeCoach(
         includeAssertions: config.judge.includeAssertions,
       }),
     climbing: () => new Climbing(vault),
+    generating: () =>
+      new Generating({
+        notes: vault,
+        sessions: vault,
+        partner: partner(),
+        rules: config.sparring,
+        ladder: config.ladder,
+        clock,
+      }),
     close: () => vault.close(),
   };
 }

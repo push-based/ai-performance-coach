@@ -52,14 +52,36 @@ export class VaultContractError extends Error {
 export type SessionItemInput = (
   { note: string; coach_id?: never } | { coach_id: string; note?: never }
 ) & {
-  challenge: string;
-  answer: string;
-  verdict: Verdict;
+  challenge?: string;
+  answer?: string;
+  verdict?: Verdict;
   gaps?: string[];
-  next_review: string;
+  next_review?: string;
+  generate?: {
+    attempted_at: string;
+    revealed_at: string;
+    idk?: boolean;
+    marks: { assertion: string; mark: string; correction?: string }[];
+  };
+  elaborate?: {
+    answers: {
+      kind: 'why' | 'connect' | 'apply';
+      question: string;
+      answer: string;
+      links?: string[];
+      named?: string;
+    }[];
+  };
+  teach?: {
+    turns: { role: 'learner' | 'student'; text: string }[];
+    misconception: { assertion: number; text: string };
+    misconception_corrected: boolean;
+    unresolved_terms?: string[];
+  };
 };
 
 export interface RecordSessionInput {
+  kind?: 'spar' | 'generate' | 'elaborate' | 'teach';
   tier: Tier;
   date?: string;
   items: SessionItemInput[];

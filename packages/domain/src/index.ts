@@ -11,3 +11,4 @@ export * from './lib/coaching-style.js';
 export * from './lib/synthesis.js';
 export * from './lib/climb.js';
 export * from './lib/free-recall.js';
+export * from './lib/generate.js';

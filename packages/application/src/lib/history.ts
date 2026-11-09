@@ -5,6 +5,7 @@ import type {
   SparringRules,
   Tier2Outcome,
 } from '@ai-coach/domain';
+import { NotFoundError } from './errors.js';
 import type { StyleClassifier } from './ports/models.js';
 import type { NoteDetails, NotesRepository } from './ports/vault.js';
 
@@ -80,4 +81,24 @@ export function referenceOf(note: NoteDetails): Reference {
     passages,
     sources: [...new Set(found.map((p) => p.note))],
   };
+}
+
+export async function notePath(
+  notes: NotesRepository,
+  ref: string,
+): Promise<string> {
+  if (ref.endsWith('.md')) return ref;
+  const { notes: resources } = await notes.listNotes({ bucket: 'resources' });
+  const title = ref.trim().toLowerCase();
+  const matches = resources.filter(
+    (n) => n.coachId === ref || n.title.toLowerCase() === title,
+  );
+  if (!matches.length)
+    throw new NotFoundError(`No Resources note matches "${ref}"`);
+  if (matches.length > 1) {
+    throw new NotFoundError(
+      `"${ref}" matches ${matches.length} notes, give its path: ${matches.map((n) => n.path).join(', ')}`,
+    );
+  }
+  return matches[0]!.path;
 }
