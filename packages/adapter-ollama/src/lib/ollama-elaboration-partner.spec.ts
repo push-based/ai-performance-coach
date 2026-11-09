@@ -3,6 +3,7 @@ import type { AddressInfo } from 'node:net';
 import { UnusableReplyError } from '@ai-coach/application';
 import { sparringRules } from '@ai-coach/domain';
 import { OllamaElaborationPartner } from './ollama-elaboration-partner.js';
+import { OllamaStructurePartner } from './ollama-structure-partner.js';
 
 const NOTE = {
   title: 'Design tokens',
@@ -101,5 +102,62 @@ describe('OllamaElaborationPartner', () => {
         rejected: [],
       }),
     ).rejects.toThrow(UnusableReplyError);
+  });
+});
+
+describe('OllamaStructurePartner', () => {
+  let server: Server;
+  let host: string;
+  const sent: { messages: { content: string }[] }[] = [];
+  let reply = '';
+
+  beforeAll(async () => {
+    server = createServer((req, res) => {
+      let raw = '';
+      req.on('data', (chunk) => (raw += chunk));
+      req.on('end', () => {
+        sent.push(JSON.parse(raw));
+        res.writeHead(200, { 'content-type': 'application/json' }).end(
+          JSON.stringify({
+            message: { role: 'assistant', content: reply },
+            done: true,
+          }),
+        );
+      });
+    });
+    await new Promise<void>((resolve) =>
+      server.listen(0, '127.0.0.1', resolve),
+    );
+    host = `http://127.0.0.1:${(server.address() as AddressInfo).port}`;
+  });
+
+  afterAll(() => new Promise((resolve) => server.close(resolve)));
+
+  it('asks about the learner structure, sending only names and titles, and caps the questions', async () => {
+    reply = JSON.stringify({
+      questions: [
+        ' Nothing builds on Recipes. Right? ',
+        '',
+        'Q2?',
+        'Q3?',
+        'Q4?',
+      ],
+    });
+    const partner = new OllamaStructurePartner({ model: 'g', host });
+    expect(
+      await partner.questions({
+        rules: sparringRules(),
+        book: 'Design System Architecture',
+        groups: [
+          { name: 'Values', concepts: ['Design tokens'] },
+          { name: 'Recipes', concepts: ['Patterns'] },
+        ],
+        buildsOn: [{ from: 'Recipes', to: 'Values' }],
+        max: 3,
+      }),
+    ).toEqual(['Nothing builds on Recipes. Right?', 'Q2?', 'Q3?']);
+    const prompt = sent[0]!.messages.map((m) => m.content).join('\n');
+    expect(prompt).toContain('"name":"Values"');
+    expect(prompt).toContain('Never propose a new group');
   });
 });

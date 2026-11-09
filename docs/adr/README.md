@@ -45,3 +45,4 @@ Every important or major change to ai-coach ships with an ADR in this folder; AD
 | [0039](0039-open-a-concept-round-with-free-recall-behind-an-option.md)            | Open a concept round with free recall, behind an option                                          | proposed               |
 | [0040](0040-guess-before-you-look-with-coach-generate.md)                         | Guess before you look with coach generate, and correct every wrong guess                         | proposed               |
 | [0041](0041-elaborate-a-concept-with-a-why-a-connection-and-a-use.md)             | Elaborate a concept with a why, a connection and a use, checked in code                          | proposed               |
+| [0042](0042-group-a-books-concepts-into-the-learners-own-layers.md)               | Group a book's concepts into the learner's own layers, with embedded questions                   | proposed               |

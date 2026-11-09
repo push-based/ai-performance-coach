@@ -17,6 +17,7 @@ import {
   SearchResult,
   Tier2Payload,
   VaultGraphResult,
+  WriteStructureResult,
   type BucketFilter,
   type ParaBucket,
   type Tier,
@@ -171,6 +172,16 @@ export class VaultClient {
 
   dueForReview(args: { today?: string } = {}): Promise<DueForReviewResult> {
     return this.call('due_for_review', args, DueForReviewResult);
+  }
+
+  writeStructure(args: {
+    book: string;
+    groups: { name: string; concepts: string[] }[];
+    builds_on?: { from: string; to: string }[];
+    execute?: boolean;
+    versions?: Record<string, string>;
+  }): Promise<WriteStructureResult> {
+    return this.call('write_structure', args, WriteStructureResult);
   }
 
   climb(args: { note?: string } = {}): Promise<ClimbResult> {

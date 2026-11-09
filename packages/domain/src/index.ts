@@ -13,3 +13,4 @@ export * from './lib/climb.js';
 export * from './lib/free-recall.js';
 export * from './lib/generate.js';
 export * from './lib/elaborate.js';
+export * from './lib/group.js';
