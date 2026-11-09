@@ -136,12 +136,38 @@ describe('coach climb', () => {
   it('warns when the stored summary disagrees with the evidence', async () => {
     const term = new ScriptedTerminal();
     await climb(coachWith([tokens({ current: false })]), term, []);
-    expect(term.text()).toContain('rebuild_climb');
+    expect(term.text()).toContain('coach climb --rebuild');
   });
 
   it('says how to get concept notes when there are none', async () => {
     const term = new ScriptedTerminal();
     await climb(coachWith([]), term, []);
     expect(term.text()).toContain('coach synthesize');
+  });
+});
+
+describe('coach climb --rebuild', () => {
+  it('lists the stale summaries, and rebuilds them with the preview versions after a yes', async () => {
+    const calls: unknown[] = [];
+    const preview = {
+      climbs: [TOKENS],
+      versions: { [TOKENS]: 'v1' },
+      executed: false,
+    };
+    const coach = {
+      climbing: () => ({
+        previewRebuild: async () => preview,
+        rebuild: async (p: unknown) => {
+          calls.push(p);
+          return { ...preview, executed: true };
+        },
+      }),
+    } as unknown as Coach;
+    const term = new ScriptedTerminal();
+    term.ask = async () => 'y';
+    await climb(coach, term, [], { rebuild: true });
+    expect(term.text()).toContain(TOKENS);
+    expect(term.text()).toContain('Rebuilt 1 climb summaries.');
+    expect(calls).toEqual([preview]);
   });
 });

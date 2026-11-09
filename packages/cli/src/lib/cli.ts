@@ -44,6 +44,7 @@ export const USAGE = `coach: a Socratic sparring partner for your notes
   coach read [book] [chapter] read a chapter page by page and write down what resonated, then sum it up
   coach synthesize [book]     turn your marks and reading notes on a book into concept notes
   coach climb [note ...]      the seven learning steps done on each concept note, and the next one
+                              (--rebuild sets every climb: summary back to what the evidence shows)
   coach group [book]          sort a book's concepts into your own groups and say what builds on what
   coach generate <note>       guess a concept, or a chapter before reading it, then check and correct the guess
   coach elaborate <note>      say why a concept matters, what it connects to, and where you would use it
@@ -114,6 +115,7 @@ export async function run(argv: string[], deps: CliDeps): Promise<number> {
         today: { type: 'string' },
         style: { type: 'string' },
         'free-recall': { type: 'boolean' },
+        rebuild: { type: 'boolean' },
         help: { type: 'boolean', short: 'h' },
       },
     });
@@ -157,6 +159,7 @@ export async function run(argv: string[], deps: CliDeps): Promise<number> {
     await handler(coach, term, args, {
       style,
       freeRecall: parsed.values['free-recall'],
+      rebuild: parsed.values.rebuild,
     });
     return 0;
   } catch (err) {

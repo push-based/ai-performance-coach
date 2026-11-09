@@ -17,6 +17,7 @@ import {
   SearchResult,
   Tier2Payload,
   ReadingNotesResult,
+  RebuildClimbResult,
   VaultGraphResult,
   WriteStructureResult,
   WriteSummaryResult,
@@ -203,6 +204,13 @@ export class VaultClient {
     versions?: Record<string, string>;
   }): Promise<WriteStructureResult> {
     return this.call('write_structure', args, WriteStructureResult);
+  }
+
+  rebuildClimb(args: {
+    execute?: boolean;
+    versions?: Record<string, string>;
+  }): Promise<RebuildClimbResult> {
+    return this.call('rebuild_climb', args, RebuildClimbResult);
   }
 
   climb(args: { note?: string } = {}): Promise<ClimbResult> {

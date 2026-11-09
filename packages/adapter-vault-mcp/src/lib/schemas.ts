@@ -352,3 +352,6 @@ export const WriteSummaryResult = z.object({
   executed: z.boolean(),
 });
 export type WriteSummaryResult = z.infer<typeof WriteSummaryResult>;
+
+export const RebuildClimbResult = WriteStructureResult.omit({ path: true });
+export type RebuildClimbResult = z.infer<typeof RebuildClimbResult>;
