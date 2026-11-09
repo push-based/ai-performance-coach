@@ -79,9 +79,12 @@ export interface DueReport {
     path: string;
     title: string;
     concept?: boolean;
-    coachId: string;
+    coachId: string | null;
     nextReview: string;
     mastery: Mastery;
+    firstReview?: boolean;
+    book?: string | null;
+    group?: string | null;
   }[];
   unsparred: { path: string; title: string; concept?: boolean }[];
   orphaned: { coachId: string; lastSession: string | null }[];

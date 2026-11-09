@@ -77,10 +77,11 @@ Every result moves the next review:
 | Result                    | Next review                                                   |
 | ------------------------- | ------------------------------------------------------------- |
 | Failed                    | tomorrow                                                      |
+| Passed for the first time | tomorrow                                                      |
 | Passed sparring (Tier 1)  | in 3 days                                                     |
 | Passed the judge (Tier 2) | 7 days, then 14, 30, 60, 120, 240 and 365 as you keep passing |
 
-You can change every number in [`ladder`](configuration.md#settings).
+A new concept note is due the day after you made it, marked "first review" in `coach due`. When several ideas are due, the coach mixes their topics, so two ideas from the same group or book don't come one after the other. You can change every number in [`ladder`](configuration.md#settings).
 
 ## Why it's strict
 

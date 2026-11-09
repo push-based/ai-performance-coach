@@ -158,9 +158,12 @@ export const DueForReviewResult = z.object({
       path: z.string(),
       title: z.string(),
       concept: z.boolean().optional(),
-      coachId: z.string(),
+      coachId: z.string().nullable(),
       nextReview: IsoDate,
       mastery: Mastery,
+      firstReview: z.boolean().optional(),
+      book: z.string().nullish(),
+      group: z.string().nullish(),
     }),
   ),
   unsparred: z.array(

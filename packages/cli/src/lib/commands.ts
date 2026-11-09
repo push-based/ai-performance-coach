@@ -35,8 +35,12 @@ export async function due(coach: Coach, term: Terminal): Promise<void> {
   const report = await coach.review.due(coach.clock.today());
   term.print(paint('bold', `Due on ${report.today}: ${report.due.length}`));
   for (const n of report.due) {
+    const status = n.firstReview
+      ? paint('cyan', 'first review')
+      : paint(MASTERY_STYLE[n.mastery], n.mastery);
+    const where = n.group ?? n.book;
     term.print(
-      `  ${n.title} ${paint(MASTERY_STYLE[n.mastery], n.mastery)} ${paint('dim', `${n.nextReview}  ${n.coachId}`)}`,
+      `  ${n.title} ${status} ${paint('dim', [n.nextReview, where, n.coachId].filter(Boolean).join('  '))}`,
     );
   }
   term.print(paint('bold', `Never sparred: ${report.unsparred.length}`));

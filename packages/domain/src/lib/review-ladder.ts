@@ -7,12 +7,14 @@ export interface Tier2Outcome {
 }
 
 export interface Ladder {
+  firstReviewDays: number;
   failDays: number;
   tier1PassDays: number;
   tier2PassDays: number[];
 }
 
 export const DEFAULT_LADDER: Ladder = {
+  firstReviewDays: 1,
   failDays: 1,
   tier1PassDays: 3,
   tier2PassDays: [7, 14, 30, 60, 120, 240, 365],
@@ -24,6 +26,7 @@ export interface ReviewInput {
   gaps: number;
   date: string;
   tier2History: Tier2Outcome[];
+  first?: boolean;
 }
 
 export interface Review {
@@ -55,6 +58,7 @@ export function addDays(date: string, days: number): string {
 
 export function validateLadder(ladder: Ladder): Ladder {
   const steps = [
+    ladder.firstReviewDays,
     ladder.failDays,
     ladder.tier1PassDays,
     ...ladder.tier2PassDays,
@@ -102,7 +106,11 @@ export function scheduleReview(
 
   if (input.tier === 1) {
     const intervalDays =
-      input.verdict === 'pass' ? ladder.tier1PassDays : ladder.failDays;
+      input.verdict === 'fail'
+        ? ladder.failDays
+        : input.first
+          ? ladder.firstReviewDays
+          : ladder.tier1PassDays;
     return {
       nextReview: addDays(input.date, intervalDays),
       intervalDays,
