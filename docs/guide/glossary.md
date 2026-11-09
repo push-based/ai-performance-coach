@@ -30,6 +30,10 @@ Marking a chapter in Obsidian: bolding what matters, highlighting the best of it
 
 Writing down everything you remember about an idea, with the note closed, before any question. `coach spar --free-recall` starts this way on a [concept note](#concept-note), then asks only about the [core assertions](#core-assertion) you left out. It is the Retrieve step of the [climb](#climb).
 
+## Generate
+
+Trying to answer before you see the answer: explaining a [concept note](#concept-note) from its title, or saying what a chapter will teach before you read it. You then mark each point as got it, wrong or missed, and correct each wrong guess in your own words. `coach generate` runs it. It is the Generate step of the [climb](#climb), and is never graded.
+
 ## Judge
 
 The online model (Gemini) that gives a second, stricter verdict on your sparring answers. Also called **Tier 2**. It sees only the questions and your answers, never your notes.

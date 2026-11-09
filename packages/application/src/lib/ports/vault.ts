@@ -1,5 +1,6 @@
 import type {
   ClimbStep,
+  MarkedAssertion,
   ClimbSteps,
   CoachingStyle,
   Mastery,
@@ -145,8 +146,62 @@ export interface RecordedSession {
   }[];
 }
 
+export interface GenerateItemDraft {
+  note: NoteRef;
+  challenge: string;
+  answer: string;
+  attemptedAt: string;
+  revealedAt: string;
+  idk: boolean;
+  marks: MarkedAssertion[];
+  nextReview?: string;
+}
+
+export interface ElaborationDraft {
+  kind: 'why' | 'connect' | 'apply';
+  question: string;
+  answer: string;
+  links: string[];
+  named?: string;
+}
+
+export interface ElaborateItemDraft {
+  note: NoteRef;
+  answers: ElaborationDraft[];
+  nextReview?: string;
+}
+
+export interface TeachTurn {
+  role: 'learner' | 'student';
+  text: string;
+}
+
+export interface TeachItemDraft {
+  note: NoteRef;
+  turns: TeachTurn[];
+  misconception: { assertion: number; text: string };
+  corrected: boolean;
+  unresolvedTerms: string[];
+  verdict: Verdict;
+  gaps: string[];
+  nextReview: string;
+}
+
+export type PracticeDraft =
+  | { kind: 'generate'; date: string; items: GenerateItemDraft[] }
+  | { kind: 'elaborate'; date: string; items: ElaborateItemDraft[] }
+  | { kind: 'teach'; tier: Tier; date: string; items: TeachItemDraft[] };
+
+export interface RecordedPractice {
+  executed: boolean;
+  sessionId: string;
+  warnings: string[];
+  items: { notePath: string; coachId: string | null }[];
+}
+
 export interface SessionLog {
   record(draft: SessionDraft, execute: boolean): Promise<RecordedSession>;
+  practise(draft: PracticeDraft, execute: boolean): Promise<RecordedPractice>;
   tier2Payload(
     sessionId: string,
     options?: { includeAssertions?: boolean },

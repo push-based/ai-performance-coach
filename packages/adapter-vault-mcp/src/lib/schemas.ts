@@ -199,11 +199,12 @@ export const RecordSessionResult = z.object({
   items: z.array(
     z.object({
       note: z.string(),
-      coach_id: z.string(),
-      verdict: Verdict,
-      next_review: IsoDate,
+      coach_id: z.string().nullable(),
+      verdict: z.enum(['pass', 'fail', 'ungraded']).nullish(),
+      next_review: IsoDate.nullish(),
     }),
   ),
+  warnings: z.array(z.string()).optional().default([]),
 });
 export type RecordSessionResult = z.infer<typeof RecordSessionResult>;
 

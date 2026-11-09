@@ -73,4 +73,10 @@ export class SystemClock implements Clock {
   today(): string {
     return this.fixed ?? localDate();
   }
+
+  now(): string {
+    const at = new Date();
+    if (!this.fixed) return at.toISOString();
+    return `${this.fixed}T${at.toISOString().slice(11)}`;
+  }
 }

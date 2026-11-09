@@ -15,4 +15,5 @@ export interface PendingJudgements {
 
 export interface Clock {
   today(): string;
+  now(): string;
 }

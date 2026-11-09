@@ -46,6 +46,8 @@ import type {
 import type {
   ConceptClimb,
   DueReport,
+  PracticeDraft,
+  RecordedPractice,
   FilingPlan,
   FilingRequest,
   NoteDetails,
@@ -100,6 +102,8 @@ export class InMemoryVault implements NotesRepository, SessionLog, VaultFiling {
   readonly notes = new Map<string, StoredNote>();
   readonly sessions: StoredSession[] = [];
   readonly climbs: ConceptClimb[] = [];
+  readonly practices: { draft: PracticeDraft; sessionId: string }[] = [];
+  readonly refusals: string[] = [];
   private ids = 0;
 
   constructor(notes: Record<string, string> = {}) {
@@ -205,6 +209,41 @@ export class InMemoryVault implements NotesRepository, SessionLog, VaultFiling {
       chapter: note.chapter,
       concept: note.concept,
       style: note.style,
+    };
+  }
+
+  async practise(
+    draft: PracticeDraft,
+    execute: boolean,
+  ): Promise<RecordedPractice> {
+    const refusal = this.refusals.shift();
+    if (refusal)
+      throw new VaultRefusedError(`record_session refused: ${refusal}`);
+    const items = draft.items.map((item) => {
+      const note =
+        'path' in item.note
+          ? this.notes.get(item.note.path)
+          : [...this.notes.values()].find(
+              (n) => n.coachId === (item.note as { coachId: string }).coachId,
+            );
+      if (!note || this.bucket(note.path) !== 'resources') {
+        throw new VaultRefusedError(
+          `record_session refused: ${JSON.stringify(item.note)} is not a Resources note`,
+        );
+      }
+      return note;
+    });
+    const sessionId = `s-${++this.ids}`;
+    if (execute) {
+      for (const note of items)
+        if (!note.raw && !note.coachId) note.coachId = `c-${++this.ids}`;
+      this.practices.push({ draft: structuredClone(draft), sessionId });
+    }
+    return {
+      executed: execute,
+      sessionId,
+      warnings: [],
+      items: items.map((n) => ({ notePath: n.path, coachId: n.coachId })),
     };
   }
 
@@ -407,10 +446,18 @@ export class InMemoryPending implements PendingJudgements {
 }
 
 export class FixedClock implements Clock {
+  private ticks = 0;
+
   constructor(public date: string) {}
 
   today(): string {
     return this.date;
+  }
+
+  now(): string {
+    return new Date(
+      Date.parse(`${this.date}T09:00:00.000Z`) + 1000 * this.ticks++,
+    ).toISOString();
   }
 }
 

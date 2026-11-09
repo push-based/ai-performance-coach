@@ -13,7 +13,10 @@ import {
   type NoteDetails,
   type NoteListing,
   type NotesRepository,
+  type NoteRef,
   type PassageHit,
+  type PracticeDraft,
+  type RecordedPractice,
   type RecordedSession,
   type SessionDraft,
   type SessionLog,
@@ -32,6 +35,7 @@ import {
   VaultClient,
   VaultContractError,
   VaultToolError,
+  type SessionItemInput,
   type VaultClientOptions,
 } from './vault-client.js';
 
@@ -180,9 +184,77 @@ export class McpVault
       sessionId: result.session_id,
       items: result.items.map((i) => ({
         notePath: i.note,
+        coachId: i.coach_id ?? '',
+        verdict: i.verdict === 'pass' ? 'pass' : 'fail',
+        nextReview: i.next_review ?? draft.date,
+      })),
+    };
+  }
+
+  async practise(
+    draft: PracticeDraft,
+    execute: boolean,
+  ): Promise<RecordedPractice> {
+    const ref = (note: NoteRef) =>
+      'coachId' in note ? { coach_id: note.coachId } : { note: note.path };
+    const review = (nextReview?: string) =>
+      nextReview ? { next_review: nextReview } : {};
+    const items: SessionItemInput[] =
+      draft.kind === 'generate'
+        ? draft.items.map((i) => ({
+            ...ref(i.note),
+            challenge: i.challenge,
+            answer: i.answer,
+            ...review(i.nextReview),
+            generate: {
+              attempted_at: i.attemptedAt,
+              revealed_at: i.revealedAt,
+              idk: i.idk,
+              marks: i.marks,
+            },
+          }))
+        : draft.kind === 'elaborate'
+          ? draft.items.map((i) => ({
+              ...ref(i.note),
+              ...review(i.nextReview),
+              elaborate: {
+                answers: i.answers.map((a) => ({
+                  kind: a.kind,
+                  question: a.question,
+                  answer: a.answer,
+                  ...(a.links.length ? { links: a.links } : {}),
+                  ...(a.named ? { named: a.named } : {}),
+                })),
+              },
+            }))
+          : draft.items.map((i) => ({
+              ...ref(i.note),
+              verdict: i.verdict,
+              gaps: i.gaps,
+              next_review: i.nextReview,
+              teach: {
+                turns: i.turns,
+                misconception: i.misconception,
+                misconception_corrected: i.corrected,
+                unresolved_terms: i.unresolvedTerms,
+              },
+            }));
+    const result = await this.client
+      .recordSession({
+        kind: draft.kind,
+        tier: draft.kind === 'teach' ? draft.tier : 1,
+        date: draft.date,
+        execute,
+        items,
+      })
+      .catch(translate);
+    return {
+      executed: result.executed,
+      sessionId: result.session_id,
+      warnings: result.warnings,
+      items: result.items.map((i) => ({
+        notePath: i.note,
         coachId: i.coach_id,
-        verdict: i.verdict,
-        nextReview: i.next_review,
       })),
     };
   }
