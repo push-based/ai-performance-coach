@@ -43,7 +43,7 @@ Ask the user what to add and what to move. Then build one set of writes:
 - **New task for today** → `add_tasks` into its owner's note with `scheduled: <day>` (`add-task`). A one-off with no owner note is an ad-hoc task in the day plan, via `plan_days {days: {<day>: {ad_hoc: [{text, link, size, date: <day>}]}}}`.
 - **Move tasks to other days** → `plan_days` with each target day's `schedule: [{note, task}]`, one call for every move. For identical lines (`Gym #M` ×4), or a task with a `blockId`, use `update_task {set: {scheduled: <target day>}}` by `line` or `blockId`, and create the target day plan with `plan_days` if it is missing.
 - **Overdue task**: ask per task whether it's today, another day, done, dropped, or left as it is. Never move one without the user saying so. Done and dropped are `update_task` `state: "done"` or `"cancelled"`.
-- **Done already**: the user can tick it in Obsidian, or say so and it becomes `update_task` `state: "done"`. A habit check is ticked in Obsidian, or with `update_task {note: "Plans/Daily/<day>.md", task: "<habit>", set: {state: "done"}}`.
+- **Done already**: the user can tick it in Obsidian, or say so and it becomes `update_task` `state: "done"`. A habit check is ticked in Obsidian, or with `update_task {note: "Plans/Daily/<year>/<month>/<day>.md", task: "<habit>", set: {state: "done"}}`.
 - **Posts**: check any posting cap and slot times from `rules.md` on the target day before scheduling. A post without its time gets it with `update_task {set: {text: "<text> 14:00"}}`.
 - **Resize or reprioritise**: `update_task {set: {size}}` or `{priority}`.
 
@@ -55,7 +55,7 @@ Preview every call, show all previews together, then execute after the user's ye
 2. `planning_overview` with `period: <day>, scope: "period"`: what is still open today.
 3. Show done (by owner, with points), then still open. For each open one-off task, ask: tomorrow, a later day, or leave it overdue. Habit checks left open need nothing: each is a missed day, never moved. Name them in one line, plainly.
 4. Write the moves as in the morning (one `plan_days` call, `update_task` for identical lines and for what the user says is done or dropped), preview, confirm, execute.
-5. Offer a short log for the day: 2–4 lines on what moved, what blocked, and anything to remember tomorrow. If the user wants it, write it with `edit_note {note: "Plans/Daily/<day>.md", heading: "Log", content, mode: "append"}`.
+5. Offer a short log for the day: 2–4 lines on what moved, what blocked, and anything to remember tomorrow. If the user wants it, write it with `edit_note {note: "Plans/Daily/<year>/<month>/<day>.md", heading: "Log", content, mode: "append"}`.
 
 ## Planning several days
 

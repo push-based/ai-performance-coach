@@ -38,3 +38,5 @@ Every important or major change to ai-coach ships with an ADR in this folder; AD
 | [0032](0032-publish-the-docs-with-docusaurus-from-the-markdown-where-it-lives.md) | Publish the docs with Docusaurus, built from the Markdown where it lives                         | proposed               |
 | [0033](0033-write-commit-messages-as-conventional-commits.md)                     | Write commit messages as Conventional Commits, checked in pull requests                          | proposed               |
 | [0034](0034-split-the-docs-into-a-short-readme-a-guide-and-contributing.md)       | Split the docs into a short README, a user guide and a contributing guide                        | proposed               |
+| [0035](0035-keep-day-plans-in-a-folder-per-month.md)                              | Keep day plans in a folder per month                                                             | proposed               |
+| [0036](0036-fix-ticked-tasks-with-update-task-and-place-tasks-by-heading-path.md) | Fix ticked tasks with update_task, and place tasks by heading path                               | proposed               |

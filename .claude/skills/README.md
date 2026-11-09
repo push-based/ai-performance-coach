@@ -92,14 +92,14 @@ To view your plans in a browser, run `npm run coach -- view` and open http://127
 
 The model belongs to kb-template (its ADR-KI-0062, 0064 and 0065). In short:
 
-| Thing          | Where in the vault                                                                         | Is                                                                         |
-| -------------- | ------------------------------------------------------------------------------------------ | -------------------------------------------------------------------------- |
-| **Project**    | `1.Projects/<P>/<P>.md`                                                                    | something with an end: `status`, `deadline` and `done_when` in frontmatter |
-| **Workstream** | `1.Projects/<P>/Workstreams/<W>.md`, or a folder `<W>/<W>.md`                              | a part of a project that is finished on its own                            |
-| **Area**       | `2.Areas/<A>.md`                                                                           | a standard you keep up, with no end date                                   |
-| **Plan**       | `Plans/Yearly/2027.md` … `Plans/Weekly/2026-W45.md`, `Plans/Daily/2026-11-03.md`           | the goals and reviews of one period                                        |
-| **Task**       | a line in its owner's note, in [Obsidian Tasks](https://publish.obsidian.md/tasks/) syntax | `- [ ] Order stickers #S ⏳ 2026-11-03`                                    |
-| **Habit**      | a line under `## Habits` in its owner's note                                               | `- Up at 6:00 🔁 every day`, checked off in each day plan                  |
+| Thing          | Where in the vault                                                                                | Is                                                                         |
+| -------------- | ------------------------------------------------------------------------------------------------- | -------------------------------------------------------------------------- |
+| **Project**    | `1.Projects/<P>/<P>.md`                                                                           | something with an end: `status`, `deadline` and `done_when` in frontmatter |
+| **Workstream** | `1.Projects/<P>/Workstreams/<W>.md`, or a folder `<W>/<W>.md`                                     | a part of a project that is finished on its own                            |
+| **Area**       | `2.Areas/<A>.md`                                                                                  | a standard you keep up, with no end date                                   |
+| **Plan**       | `Plans/Yearly/2027.md` … `Plans/Weekly/2026-W45.md`, `Plans/Daily/2026/11-November/2026-11-03.md` | the goals and reviews of one period                                        |
+| **Task**       | a line in its owner's note, in [Obsidian Tasks](https://publish.obsidian.md/tasks/) syntax        | `- [ ] Order stickers #S ⏳ 2026-11-03`                                    |
+| **Habit**      | a line under `## Habits` in its owner's note                                                      | `- Up at 6:00 🔁 every day`, checked off in each day plan                  |
 
 **Goals chain upward.** Each goal is an outcome you can check at the end of its period. Its first link is the owner it counts for, and `↑` links the goal it serves one level up:
 
