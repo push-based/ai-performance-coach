@@ -1,8 +1,10 @@
-import { sparringRules } from '@ai-coach/domain';
+import { sparringRules, type CoachingStyle } from '@ai-coach/domain';
 import {
+  FixedClassifier,
   FixedClock,
   InMemoryVault,
   ScriptedElaborationPartner,
+  unusable,
 } from '../../testing/in-memory.js';
 import {
   NotSparrableError,
@@ -22,7 +24,12 @@ const CONNECT =
   'It is like [[Custom properties]] in CSS, one name for one value.';
 const APPLY = 'In [[Checkout]], where the buttons still hard-code blue.';
 
-function setup() {
+function setup(
+  classifier:
+    | FixedClassifier
+    | { classify(): Promise<CoachingStyle> } = new FixedClassifier('feynman'),
+  noteStyle?: CoachingStyle,
+) {
   const vault = new InMemoryVault();
   vault.put(TOKENS, 'Design tokens keep each decision in one named place.', {
     rawRole: null,
@@ -32,6 +39,7 @@ function setup() {
       passages: [],
       problems: [],
     },
+    ...(noteStyle ? { style: noteStyle } : {}),
   });
   vault.put(CSS, 'Custom properties.');
   vault.put(CHECKOUT, 'Checkout.');
@@ -43,10 +51,11 @@ function setup() {
     notes: vault,
     sessions: vault,
     partner,
+    classifier,
     rules: sparringRules(),
     clock: new FixedClock('2026-11-10'),
   });
-  return { vault, partner, elaborating };
+  return { vault, partner, classifier, elaborating };
 }
 
 const QUESTIONS = {
@@ -87,7 +96,7 @@ describe('Elaborating', () => {
       new UnusableReplyError('elaboration partner', 'bad'),
     );
     expect((await failing.elaborating.open(TOKENS)).questions.connect).toBe(
-      'What that you already know is Design tokens like, or unlike?',
+      'What everyday thing is Design tokens like? Explain it without jargon.',
     );
 
     const offline = setup();
@@ -149,14 +158,71 @@ describe('Elaborating', () => {
     expect(session.links('[[Nowhere]]', [9])).toEqual([]);
   });
 
-  it('asks at most one follow-up per kind, only "Why?" or "For example?"', async () => {
+  it('asks one follow-up on connect and apply, and up to two on why, never the same one twice except "Why?"', async () => {
     const { partner, elaborating } = setup();
     partner.questionReplies.push(QUESTIONS);
-    partner.followUps.push('example', 'why');
+    partner.followUps.push('example', 'why', 'why', 'assumption', 'example');
     const session = await elaborating.open(TOKENS);
     expect(await session.followUp('apply', 'Somewhere.')).toBe('For example?');
     expect(await session.followUp('apply', 'Somewhere else.')).toBeNull();
     expect(await session.followUp('why', 'Because.')).toBe('Why?');
+    expect(await session.followUp('why', 'Because, again.')).toBe('Why?');
+    expect(await session.followUp('why', 'Because, thrice.')).toBeNull();
+    expect(await session.followUp('connect', 'Like CSS.')).toBe(
+      'What has to be true for that to work?',
+    );
+    expect(partner.followUpRequests.map((r) => r.asked)).toEqual([
+      [],
+      [],
+      ['why'],
+      [],
+    ]);
+  });
+
+  it('drops a repeated "For example?" or assumption follow-up', async () => {
+    const { partner, elaborating } = setup();
+    partner.questionReplies.push(QUESTIONS);
+    partner.followUps.push('assumption', 'assumption');
+    const session = await elaborating.open(TOKENS);
+    expect(await session.followUp('why', 'Because.')).toBe(
+      'What has to be true for that to work?',
+    );
+    expect(await session.followUp('why', 'Because it holds.')).toBeNull();
+  });
+
+  it("words the questions in the note's style: --style, then frontmatter, then the classifier", async () => {
+    const auto = setup(new FixedClassifier('cornell'));
+    auto.partner.questionReplies.push(unusable());
+    const cornell = await auto.elaborating.open(TOKENS);
+    expect(cornell.style).toBe('cornell');
+    expect(cornell.questions.connect).toBe(
+      'Who else argues something close to Design tokens, and how do they differ?',
+    );
+    expect(auto.partner.questionRequests[0]!.style).toBe('cornell');
+
+    const unused = new FixedClassifier('cornell');
+    const framed = setup(unused, 'devil');
+    framed.partner.questionReplies.push(unusable());
+    expect((await framed.elaborating.open(TOKENS)).style).toBe('devil');
+    expect(unused.classified).toEqual([]);
+
+    const asked = setup(new FixedClassifier('cornell'), 'devil');
+    asked.partner.questionReplies.push(unusable());
+    const socratic = await asked.elaborating.open(TOKENS, 'socratic');
+    expect(socratic.style).toBe('socratic');
+    expect(socratic.questions.connect).toBe(
+      'What is Design tokens close to but unlike, and where does it stop holding?',
+    );
+  });
+
+  it('falls back to feynman when the classifier cannot be reached', async () => {
+    const offline = setup({
+      classify: async () => {
+        throw new UnavailableError('ollama', 'not running');
+      },
+    });
+    offline.partner.questionReplies.push(unusable());
+    expect((await offline.elaborating.open(TOKENS)).style).toBe('feynman');
   });
 
   it('records the three answers only after confirmation', async () => {

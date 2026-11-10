@@ -15,7 +15,7 @@ const Questions = z.object({
   apply: z.string().min(1),
 });
 
-const CHOICES: (FollowUp | null)[] = ['why', 'example', null];
+const CHOICES: (FollowUp | null)[] = ['why', 'example', 'assumption', null];
 
 export class OllamaElaborationPartner implements ElaborationPartner {
   private readonly client: OllamaClient;

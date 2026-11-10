@@ -6,9 +6,12 @@ import {
   findBuzzwords,
   givesAway,
   linksIn,
+  nextFollowUp,
   quotesSource,
+  type CoachingStyle,
   type ElaborationKind,
   type ElaborationQuestions,
+  type FollowUp,
   type SparringRules,
 } from '@ai-coach/domain';
 import {
@@ -16,8 +19,8 @@ import {
   UnavailableError,
   UnusableReplyError,
 } from '../errors.js';
-import { notePath, referenceOf } from '../history.js';
-import type { ElaborationPartner } from '../ports/models.js';
+import { notePath, referenceOf, resolveStyle } from '../history.js';
+import type { ElaborationPartner, StyleClassifier } from '../ports/models.js';
 import type { Clock } from '../ports/state.js';
 import type {
   ElaborationDraft,
@@ -32,6 +35,7 @@ export interface ElaboratingDeps {
   notes: NotesRepository;
   sessions: SessionLog;
   partner: ElaborationPartner;
+  classifier: StyleClassifier;
   rules: SparringRules;
   clock: Clock;
 }
@@ -57,13 +61,14 @@ const QUESTION_ATTEMPTS = 2;
 
 export class ElaborateSession {
   private readonly rephrased = new Set<ElaborationKind>();
-  private readonly followedUp = new Set<ElaborationKind>();
+  private readonly followedUp = new Map<ElaborationKind, FollowUp[]>();
   private readonly sources: string[];
   private readonly buzzwords: string[];
 
   constructor(
     private readonly deps: ElaboratingDeps,
     readonly note: NoteDetails,
+    readonly style: CoachingStyle,
     readonly questions: ElaborationQuestions,
     readonly candidates: LinkCandidate[],
   ) {
@@ -133,20 +138,25 @@ export class ElaborateSession {
     kind: ElaborationKind,
     answer: string,
   ): Promise<string | null> {
-    if (this.followedUp.has(kind)) return null;
-    this.followedUp.add(kind);
+    const asked = this.followedUp.get(kind) ?? [];
+    if (!nextFollowUp(kind, asked, 'why')) return null;
+    let choice: FollowUp | null;
     try {
-      const choice = await this.deps.partner.followUp({
+      choice = await this.deps.partner.followUp({
         rules: this.deps.rules,
         kind,
         question: this.questions[kind],
         answer,
+        asked: [...asked],
       });
-      return choice ? FOLLOW_UPS[choice] : null;
     } catch (err) {
       if (err instanceof UnavailableError) return null;
       throw err;
     }
+    const next = nextFollowUp(kind, asked, choice);
+    if (!next) return null;
+    this.followedUp.set(kind, [...asked, next]);
+    return FOLLOW_UPS[next];
   }
 
   async plan(answers: readonly ElaborationDraft[]): Promise<ElaboratePlan> {
@@ -193,7 +203,7 @@ export class ElaborateSession {
 export class Elaborating {
   constructor(private readonly deps: ElaboratingDeps) {}
 
-  async open(ref: string): Promise<ElaborateSession> {
+  async open(ref: string, style?: CoachingStyle): Promise<ElaborateSession> {
     const note = await this.deps.notes.readNote(
       await notePath(this.deps.notes, ref),
     );
@@ -201,21 +211,43 @@ export class Elaborating {
       throw new NotSparrableError(
         `${note.path} is not a concept note: Elaborate works on a concept note's idea`,
       );
+    const chosen = await this.styleOf(note, style);
     const [questions, candidates] = await Promise.all([
-      this.questionsFor(note),
+      this.questionsFor(note, chosen),
       this.candidatesFor(note),
     ]);
-    return new ElaborateSession(this.deps, note, questions, candidates);
+    return new ElaborateSession(this.deps, note, chosen, questions, candidates);
   }
 
-  private async questionsFor(note: NoteDetails): Promise<ElaborationQuestions> {
+  private async styleOf(
+    note: NoteDetails,
+    explicit?: CoachingStyle,
+  ): Promise<CoachingStyle> {
+    try {
+      return await resolveStyle(
+        note,
+        this.deps.rules,
+        this.deps.classifier,
+        explicit,
+      );
+    } catch (err) {
+      if (err instanceof UnavailableError || err instanceof UnusableReplyError)
+        return 'feynman';
+      throw err;
+    }
+  }
+
+  private async questionsFor(
+    note: NoteDetails,
+    style: CoachingStyle,
+  ): Promise<ElaborationQuestions> {
     const reference = referenceOf(note);
     const sources = [
       note.body,
       ...reference.assertions,
       ...reference.passages.map((p) => p.text),
     ];
-    const fallback = fallbackQuestions(note.title);
+    const fallback = fallbackQuestions(note.title, style);
     const chosen: Partial<ElaborationQuestions> = {};
     const rejected: string[] = [];
     for (let attempt = 0; attempt < QUESTION_ATTEMPTS; attempt++) {
@@ -224,7 +256,7 @@ export class Elaborating {
         asked = await this.deps.partner.questions({
           note: reference.note,
           rules: this.deps.rules,
-          style: 'feynman',
+          style,
           assertions: reference.assertions,
           rejected: [...rejected],
         });

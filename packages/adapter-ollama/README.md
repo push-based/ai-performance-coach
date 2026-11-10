@@ -4,16 +4,16 @@
 
 ## What it does
 
-| Class                      | Its job                                                                                                                                                 | Used by            |
-| -------------------------- | ------------------------------------------------------------------------------------------------------------------------------------------------------- | ------------------ |
-| `OllamaSparringPartner`    | Writes the opening challenge and the follow-up questions, and decides the Tier 1 verdict. Each gap it raises is checked against what you actually said. | `coach spar`       |
-| `OllamaStudyPartner`       | Gives a guiding question per gap, a clue when you ask for help, and checks whether your new explanation closes the gap.                                 | `coach study`      |
-| `OllamaStyleClassifier`    | Reads a note and picks the coaching style that suits it, when you haven't chosen one.                                                                   | spar, study        |
-| `OllamaSynthesisPartner`   | Groups your marks into ideas, asks gap questions, drafts core assertions from your words, and suggests buzzwords.                                       | `coach synthesize` |
-| `OllamaElaborationPartner` | Words the why, connect and apply questions from the note, and picks "Why?", "For example?" or no follow-up.                                             | `coach elaborate`  |
-| `OllamaStructurePartner`   | Asks up to three questions about the learner's own groups and layers, from the titles alone.                                                            | `coach group`      |
-| `OllamaTeachPartner`       | Drafts the student's one plausible misconception from the core assertions.                                                                              | `coach teach`      |
-| `OllamaClient`             | The shared connection to Ollama, with retries and checks on what comes back.                                                                            | all of the above   |
+| Class                      | Its job                                                                                                                                                                                                            | Used by            |
+| -------------------------- | ------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------ | ------------------ |
+| `OllamaSparringPartner`    | Writes the opening challenge and the follow-up questions, and decides the Tier 1 verdict. Each gap it raises is checked against what you actually said.                                                            | `coach spar`       |
+| `OllamaStudyPartner`       | Gives a guiding question per gap, a clue when you ask for help, and checks whether your new explanation closes the gap.                                                                                            | `coach study`      |
+| `OllamaStyleClassifier`    | Reads a note and picks the coaching style that suits it, when you haven't chosen one.                                                                                                                              | spar, study        |
+| `OllamaSynthesisPartner`   | Groups your marks into ideas, asks gap questions, drafts core assertions from your words, and suggests buzzwords.                                                                                                  | `coach synthesize` |
+| `OllamaElaborationPartner` | Words the why, connect and apply questions from the note, with the connect question from the angle of the note's style, and picks "Why?", "For example?", "What has to be true for that to work?" or no follow-up. | `coach elaborate`  |
+| `OllamaStructurePartner`   | Asks up to three questions about the learner's own groups and layers, from the titles alone.                                                                                                                       | `coach group`      |
+| `OllamaTeachPartner`       | Drafts the student's one plausible misconception from the core assertions.                                                                                                                                         | `coach teach`      |
+| `OllamaClient`             | The shared connection to Ollama, with retries and checks on what comes back.                                                                                                                                       | all of the above   |
 
 All the prompts are in `prompts.ts`, so tuning how the coach talks starts there.
 

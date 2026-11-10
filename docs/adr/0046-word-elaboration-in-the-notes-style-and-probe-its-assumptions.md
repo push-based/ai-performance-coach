@@ -1,0 +1,46 @@
+---
+id: ADR-0046
+title: "Word Elaborate in the note's coaching style, and probe the reasons and assumptions behind each answer"
+status: proposed
+date: 2026-11-10
+supersedes: []
+superseded_by: []
+links: ['ADR-0005', 'ADR-0019', 'ADR-0025', 'ADR-0037', 'ADR-0041']
+---
+
+# ADR-0046: Word Elaborate in the note's coaching style, and probe the reasons and assumptions behind each answer
+
+## Context
+
+Elaborate (ADR-0041) is elaborative interrogation from _Make It Stick_: the learner adds connections to an idea, ungraded. It asks three questions (why, connect, apply), checks each answer in code, and allows one follow-up per answer, "Why?" or "For example?".
+
+Two techniques sit close to it. Socratic questioning has two halves. Its question types (clarification, reasons, assumptions, viewpoints, consequences) are elaboration. Its method, testing a claim against counter-examples until it breaks, is a test, and the climb already runs it in Retrieve and Space through `coach spar` (ADR-0005) and the `socratic` style. The Feynman technique, explaining simply to a beginner to find your gaps, is what Teach does (ADR-0044); only its analogy step belongs in Elaborate.
+
+The coaching styles (ADR-0019) set how spar, judge and study push the learner, per note. Elaborate passed a fixed `feynman` to the model, so every note's questions were worded in the Feynman style, whatever the note's style. One follow-up stopped a "why" at its first reason, and nothing asked for the conditions an answer takes for granted.
+
+## Decision
+
+This ADR amends points 2 and 4 of ADR-0041; the rest of ADR-0041 stands.
+
+1. **Elaborate uses the note's coaching style**, resolved as spar and study resolve it: `--style`, then the note's `style:` frontmatter, then `sparring.style`, then the classifier. When the classifier cannot be reached, Elaborate uses `feynman`, because Elaborate works without a model.
+2. **The style words the connect question.** The model is asked for a connect question from the style's angle, and the fixed fallback question follows the style too:
+
+   | Style      | Connect asks for                                                              |
+   | ---------- | ----------------------------------------------------------------------------- |
+   | `feynman`  | an everyday thing the idea is like, explained without jargon                  |
+   | `socratic` | something close the idea is unlike, or a case where it stops holding          |
+   | `cornell`  | another author, book or note that argues something close, and how they differ |
+   | `devil`    | something that does the same job, and where the idea breaks or costs more     |
+
+   The why and apply questions, the checks on every answer, and what counts for the climb do not change.
+
+3. **A third follow-up, for every style: "What has to be true for that to work?"** It asks for the condition an answer takes for granted, a Socratic question that tests nothing. The model chooses among "Why?", "For example?", this one, or none; the words stay fixed in code.
+4. **A why answer may be followed up twice, connect and apply once.** Only "Why?" may be asked twice, so a reason can be asked for its own reason. The model is told which follow-ups were already asked.
+5. **Generate and Teach keep a fixed `feynman`.** In Generate it is only the bar for checking a guess, and a stricter style would ask an ungraded guess for an argument. Teach is the Feynman technique by design.
+
+## Consequences
+
+- An `auto` note gets Feynman wording when it explains how something works, and Cornell wording when it is an essay or chapter. Socratic or devil's-advocate wording appears only where the learner chose that style, or with `coach elaborate --style`.
+- Opening `coach elaborate` may call the style classifier once, as `coach spar` does.
+- A why answer can take up to two more lines, so a session can be a little longer.
+- Elaborate stays ungraded and stays the learner's work: no model answers, and no style turns it into a test.

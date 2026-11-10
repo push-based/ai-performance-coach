@@ -61,7 +61,7 @@ Options: --style feynman|socratic|cornell|devil, --free-recall, --config <file>,
 --free-recall opens spar on a concept note by asking you to write down everything you remember, then asks only about what you missed.
 
 Styles: feynman (plain words, no jargon), socratic (counter-examples), cornell (the author's thesis and argument), devil (failure modes and trade-offs).
-Without --style, a note's style: frontmatter, then sparring.style in the config, then automatic choice.`;
+--style applies to spar, study and elaborate. Without it, a note's style: frontmatter, then sparring.style in the config, then automatic choice.`;
 
 export interface CliDeps extends AdapterOverrides {
   term: Terminal;

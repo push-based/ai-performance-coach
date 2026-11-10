@@ -1,6 +1,9 @@
+import { COACHING_STYLES } from './coaching-style.js';
 import {
+  CONNECT_ANGLES,
   elaborationProblem,
   fallbackQuestions,
+  nextFollowUp,
   givesAway,
   hasReason,
   linksIn,
@@ -116,5 +119,31 @@ describe('elaboration rules', () => {
       ),
     ).toBe(true);
     expect(fallbackQuestions('Design tokens').why).toContain('Design tokens');
+  });
+});
+
+describe('elaboration by style', () => {
+  it('words the connect question for each style, and the others the same', () => {
+    const connects = COACHING_STYLES.map(
+      (s) => fallbackQuestions('Design tokens', s).connect,
+    );
+    expect(new Set(connects).size).toBe(COACHING_STYLES.length);
+    for (const c of connects) expect(c).toContain('Design tokens');
+    expect(fallbackQuestions('Design tokens', 'devil').why).toBe(
+      fallbackQuestions('Design tokens').why,
+    );
+    expect(Object.keys(CONNECT_ANGLES).sort()).toEqual(
+      [...COACHING_STYLES].sort(),
+    );
+  });
+
+  it('allows two follow-ups on why and one elsewhere, and repeats only "Why?"', () => {
+    expect(nextFollowUp('why', [], 'why')).toBe('why');
+    expect(nextFollowUp('why', ['why'], 'why')).toBe('why');
+    expect(nextFollowUp('why', ['why', 'why'], 'assumption')).toBeNull();
+    expect(nextFollowUp('why', ['assumption'], 'assumption')).toBeNull();
+    expect(nextFollowUp('why', ['example'], 'assumption')).toBe('assumption');
+    expect(nextFollowUp('apply', ['example'], 'why')).toBeNull();
+    expect(nextFollowUp('connect', [], null)).toBeNull();
   });
 });
