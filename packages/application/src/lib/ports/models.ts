@@ -103,6 +103,7 @@ export interface FollowUpRequest {
   kind: ElaborationKind;
   question: string;
   answer: string;
+  asked: FollowUp[];
 }
 
 export interface ElaborationPartner {

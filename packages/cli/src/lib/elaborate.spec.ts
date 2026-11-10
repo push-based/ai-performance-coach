@@ -50,7 +50,11 @@ const NOTE = {
   style: null,
 } as NoteDetails;
 
-function coachWith(followUps: (FollowUp | null)[], recorded: PracticeDraft[]) {
+function coachWith(
+  followUps: (FollowUp | null)[],
+  recorded: PracticeDraft[],
+  opened: unknown[][] = [],
+) {
   const session = new ElaborateSession(
     {
       notes: {} as never,
@@ -77,10 +81,12 @@ function coachWith(followUps: (FollowUp | null)[], recorded: PracticeDraft[]) {
         },
         followUp: async () => followUps.shift() ?? null,
       },
+      classifier: { classify: async () => 'feynman' },
       rules: sparringRules(),
       clock: { today: () => '2026-11-10', now: () => '' },
     },
     NOTE,
+    'socratic',
     {
       why: 'Why name design values?',
       connect: 'What is this like?',
@@ -92,7 +98,12 @@ function coachWith(followUps: (FollowUp | null)[], recorded: PracticeDraft[]) {
     ],
   );
   return {
-    elaborating: () => ({ open: async () => session }),
+    elaborating: () => ({
+      open: async (...args: unknown[]) => {
+        opened.push(args);
+        return session;
+      },
+    }),
   } as unknown as Coach;
 }
 
@@ -135,6 +146,44 @@ describe('coach elaborate', () => {
       answer: 'In the checkout buttons.\nAt work.',
       named: 'the checkout button set',
     });
+  });
+
+  it('follows a why answer down two levels, passes --style on, and names the style', async () => {
+    const recorded: PracticeDraft[] = [];
+    const opened: unknown[][] = [];
+    const term = new ScriptedTerminal([
+      'Because a colour then changes in one place and every screen follows.',
+      '',
+      'Because nobody hunts for hard-coded values.',
+      '',
+      'Every screen must read the token, not a copy.',
+      '',
+      'Like [[Custom properties]].',
+      '',
+      'In [[Checkout]].',
+      '',
+      'y',
+    ]);
+    await elaborate(
+      coachWith(['why', 'assumption', null, null], recorded, opened),
+      term,
+      ['Design tokens'],
+      { style: 'socratic' },
+    );
+    const text = term.text();
+    expect(opened).toEqual([['Design tokens', 'socratic']]);
+    expect(text).toContain('(socratic style)');
+    expect(text).toContain('coach> Why?');
+    expect(text).toContain('coach> What has to be true for that to work?');
+    const answers =
+      recorded[0]!.kind === 'elaborate' ? recorded[0]!.items[0]!.answers : [];
+    expect(answers[0]!.answer).toBe(
+      [
+        'Because a colour then changes in one place and every screen follows.',
+        'Because nobody hunts for hard-coded values.',
+        'Every screen must read the token, not a copy.',
+      ].join('\n'),
+    );
   });
 
   it('records nothing when the learner quits', async () => {

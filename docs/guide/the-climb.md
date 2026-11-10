@@ -127,11 +127,22 @@ If either tier fails you, run `coach study <note>` to work through the gaps with
 
 **What you do:** answer three questions about the idea: **why** it works that way, what it's **like** or unlike, and where you'd **use** it.
 
-**Command:** `coach elaborate <note>`.
+**Command:** `coach elaborate <note>`. Add `--style` to word the questions in another [coaching style](coaching-styles.md) for this run.
 
 **Counts when** an elaborate session is recorded. Your answers are added to the note under `## My elaborations`.
 
 **Why:** an idea tied to what you already know is easier to find again. Each answer is checked in code: _why_ needs a reason ("because", "so that", "otherwise"), _like_ needs a link to another note as `[[Title]]` or something named from your own work, and _use_ needs a concrete place, such as a project, a team or a decision. It's not graded.
+
+**The note's style words the _like_ question.** It's the same style spar uses for the note:
+
+| Style      | The _like_ question asks…                                        |
+| ---------- | ---------------------------------------------------------------- |
+| `feynman`  | what everyday thing it's like, explained without jargon          |
+| `socratic` | what it's close to but unlike, and where it stops holding        |
+| `cornell`  | who else argues something close, and how they differ             |
+| `devil`    | what does the same job, and where this idea breaks or costs more |
+
+**Follow-ups dig into your reasons.** After an answer, the coach may ask one of three fixed questions: "Why?", "For example?", or "What has to be true for that to work?". Your _why_ answer can get two of them, so a reason can be asked for its own reason. The others get one. These are Socratic questions, but nothing here is a test: the coach never argues back or grades you.
 
 ### 6. Space
 

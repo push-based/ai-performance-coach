@@ -8,6 +8,8 @@ import type {
   StudyRequest,
 } from '@ai-coach/application';
 import {
+  CONNECT_ANGLES,
+  FOLLOW_UPS,
   STYLE_GUIDES,
   type CoachingStyle,
   type Exchange,
@@ -588,7 +590,7 @@ export function elaborationQuestionsMessages(
       content: [
         'Write three questions that make the learner elaborate on the idea of this note, in their own words.',
         '"why": why the idea is built the way it is, and what would break without it.',
-        '"connect": what else the learner already knows that this idea is like, or unlike.',
+        `"connect": ${CONNECT_ANGLES[request.style]}, from what the learner already knows.`,
         '"apply": where in their own work, this month, the learner would use it.',
         'Each question is one sentence about the idea the title names. Never state the answer, and never copy a phrase from the note.',
         ...(request.rejected.length
@@ -614,10 +616,16 @@ export function followUpMessages(
       role: 'user',
       content: [
         `A learner answered a "${request.kind}" question about an idea. Choose what to ask next.`,
-        '1. "Why?": the answer states something but gives no reason for it.',
+        '1. "Why?": the answer states something but gives no reason for it, or its reason needs a reason of its own.',
         '2. "For example?": the answer stays abstract and names nothing concrete.',
-        '3. Nothing: the answer already gives a reason and something concrete.',
-        'Reply with only the number: 1, 2 or 3.',
+        '3. "What has to be true for that to work?": the answer gives a reason or a use but takes for granted a condition it depends on.',
+        '4. Nothing: the answer already gives a reason, something concrete and the conditions it needs.',
+        ...(request.asked.length
+          ? [
+              `Already asked: ${request.asked.map((a) => JSON.stringify(FOLLOW_UPS[a])).join(', ')}. The learner's reply to them is part of the answer.`,
+            ]
+          : []),
+        'Reply with only the number: 1, 2, 3 or 4.',
         '',
         wrapTranscript(
           [{ question: request.question, answer: request.answer }],

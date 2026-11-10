@@ -68,26 +68,56 @@ describe('OllamaElaborationPartner', () => {
     const prompt = sent[0]!.messages.map((m) => m.content).join('\n');
     expect(prompt).toContain('untrusted data');
     expect(prompt).toContain('Old question?');
+    expect(prompt).toContain('an everyday thing the idea is like');
   });
 
-  it('picks "why", "example" or nothing as the follow-up, and nothing on a bad reply', async () => {
+  it("asks the connect question from the angle of the note's style", async () => {
+    replies.push(
+      JSON.stringify({ why: 'Why?', connect: 'Unlike what?', apply: 'Where?' }),
+    );
+    const partner = new OllamaElaborationPartner({ model: 'g', host });
+    await partner.questions({
+      note: NOTE,
+      rules: sparringRules(),
+      style: 'socratic',
+      assertions: [],
+      rejected: [],
+    });
+    const prompt = sent[0]!.messages.map((m) => m.content).join('\n');
+    expect(prompt).toContain('a case where the idea stops holding');
+    expect(prompt).toContain('socratic style');
+  });
+
+  it('picks "why", "example", the assumption or nothing as the follow-up, and nothing on a bad reply', async () => {
     const partner = new OllamaElaborationPartner({ model: 'g', host });
     const request = {
       rules: sparringRules(),
       kind: 'apply' as const,
       question: 'Where?',
       answer: 'At work.',
+      asked: [],
     };
     replies.push('2');
     expect(await partner.followUp(request)).toBe('example');
     replies.push('1');
     expect(await partner.followUp(request)).toBe('why');
     replies.push('3');
+    expect(await partner.followUp(request)).toBe('assumption');
+    replies.push('4');
     expect(await partner.followUp(request)).toBeNull();
     replies.push('nonsense');
     expect(await partner.followUp(request)).toBeNull();
     const prompt = sent[0]!.messages.map((m) => m.content).join('\n');
     expect(prompt).not.toContain('NOTE-BODY-MARKER');
+    expect(prompt).not.toContain('Already asked');
+    replies.push('4');
+    await partner.followUp({ ...request, kind: 'why', asked: ['why'] });
+    expect(
+      sent
+        .at(-1)!
+        .messages.map((m) => m.content)
+        .join('\n'),
+    ).toContain('Already asked: "Why?"');
   });
 
   it('reports an unusable question reply', async () => {

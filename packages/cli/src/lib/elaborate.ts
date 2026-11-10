@@ -1,6 +1,6 @@
 import type { ElaborateSession, ElaborationDraft } from '@ai-coach/application';
 import { ELABORATION_KINDS, type ElaborationKind } from '@ai-coach/domain';
-import { UsageError } from './commands.js';
+import { UsageError, type CommandOptions } from './commands.js';
 import type { Coach } from './composition.js';
 import { confirm, paint, readAnswer, type Terminal } from './terminal.js';
 
@@ -69,16 +69,18 @@ async function answerOne(
     }
   }
 
-  const followUp = await session.followUp(kind, text);
-  if (followUp) {
+  for (
+    let followUp = await session.followUp(kind, text);
+    followUp;
+    followUp = await session.followUp(kind, text)
+  ) {
     term.print(`${paint('cyan', 'coach>')} ${followUp}`);
     const input = await readAnswer(term);
     if (input.kind === 'quit') return null;
-    if (input.kind === 'answer') {
-      if (session.copies(input.text))
-        term.print(paint('yellow', 'That copies the note, so it is left out.'));
-      else text = `${text}\n${input.text}`;
-    }
+    if (input.kind !== 'answer') break;
+    if (session.copies(input.text))
+      term.print(paint('yellow', 'That copies the note, so it is left out.'));
+    else text = `${text}\n${input.text}`;
   }
   return {
     kind,
@@ -93,12 +95,13 @@ export async function elaborate(
   coach: Coach,
   term: Terminal,
   args: string[],
+  options: CommandOptions = {},
 ): Promise<void> {
   if (args.length !== 1)
     throw new UsageError('Name one concept note: coach elaborate <note>');
-  const session = await coach.elaborating().open(args[0]!);
+  const session = await coach.elaborating().open(args[0]!, options.style);
   term.print(
-    paint('bold', `── Elaborate: ${session.note.title}, in your own words`),
+    `${paint('bold', `── Elaborate: ${session.note.title}, in your own words`)} ${paint('dim', `(${session.style} style)`)}`,
   );
   term.print(
     paint(

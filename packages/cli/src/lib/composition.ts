@@ -164,6 +164,7 @@ export async function composeCoach(
         partner:
           overrides.elaborationPartner?.(config) ??
           new OllamaElaborationPartner(ollamaOptions(config)),
+        classifier: classifier(),
         rules: config.sparring,
         clock,
       }),
