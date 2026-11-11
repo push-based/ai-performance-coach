@@ -1,3 +1,4 @@
+import { COACHING_STYLES } from '@ai-coach/domain';
 import { z } from 'zod';
 
 export const PARA_BUCKETS = [
@@ -57,6 +58,8 @@ export const ListNotesResult = z.object({
 });
 export type ListNotesResult = z.infer<typeof ListNotesResult>;
 
+const Style = z.enum(COACHING_STYLES);
+
 export const SessionEntry = z.object({
   session_id: z.string(),
   tier: z.union([z.literal(1), z.literal(2)]),
@@ -64,6 +67,7 @@ export const SessionEntry = z.object({
   verdict: Verdict,
   gaps: z.array(z.string()),
   next_review: IsoDate,
+  style: Style.nullish(),
 });
 export type SessionEntry = z.infer<typeof SessionEntry>;
 
@@ -322,6 +326,7 @@ export const ClimbResult = z.array(
     next: ClimbStepName.nullable(),
     skipped: z.array(ClimbStepName),
     spacedPass: StepEvidence.nullable(),
+    spacedStyles: z.array(Style).optional().default([]),
     teach: z.object({ ok: z.boolean(), reason: z.string().optional() }),
   }),
 );

@@ -3,6 +3,8 @@ import {
   STYLE_GUIDES,
   asksForHelp,
   isCoachingStyle,
+  secondStyle,
+  spacedStyle,
 } from './coaching-style.js';
 
 describe('coaching styles', () => {
@@ -43,5 +45,14 @@ describe('asksForHelp', () => {
     ]) {
       expect(asksForHelp(text)).toBe(false);
     }
+  });
+
+  it('spar a note in a second style once its own style has a spaced pass', () => {
+    expect(spacedStyle('cornell', [])).toBe('cornell');
+    expect(spacedStyle('cornell', ['devil'])).toBe('cornell');
+    expect(spacedStyle('cornell', ['cornell'])).toBe('socratic');
+    expect(spacedStyle('socratic', ['socratic'])).toBe('feynman');
+    expect(spacedStyle('feynman', ['feynman', 'socratic'])).toBe('feynman');
+    expect(secondStyle('devil')).toBe('socratic');
   });
 });

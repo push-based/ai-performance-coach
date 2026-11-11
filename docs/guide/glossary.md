@@ -8,7 +8,7 @@ A word you may not hide behind when you explain an idea, such as "synergy" or "b
 
 ## Climb
 
-The seven steps from feeling you understand an idea to mastering it: **Read**, **Group**, **Generate**, **Retrieve**, **Elaborate**, **Space** and **Teach**. Each is harder than the last, and in each you do the work, not the model. `coach climb` shows which steps you've done on each [concept note](#concept-note). A step counts only when your vault holds the proof, such as your reading notes or a spar session. Retrieve is a [spar](#spar) session; Space is a spar session at least a day after the one before. Teach opens only after you pass such a spaced review, and closes while the judge's latest verdict on the idea is a fail. [The climb](the-climb.md) explains each step.
+The seven steps from feeling you understand an idea to mastering it: **Read**, **Group**, **Generate**, **Retrieve**, **Elaborate**, **Space** and **Teach**. Each is harder than the last, and in each you do the work, not the model. `coach climb` shows which steps you've done on each [concept note](#concept-note). A step counts only when your vault holds the proof, such as your reading notes or a spar session. Retrieve is a [spar](#spar) session you pass; Space is a spar session at least a day after the one before. Teach opens only after you pass such spaced reviews in two different [coaching styles](coaching-styles.md), and closes while the judge's latest verdict on the idea is a fail. [The climb](the-climb.md) explains each step.
 
 ## Coaching style
 
@@ -64,7 +64,7 @@ The first step of the [climb](#climb): reading [raw material](#raw-material) and
 
 ## Retrieve
 
-Explaining an idea from memory, with the note closed. A [spar](#spar) session on a [concept note](#concept-note) is the Retrieve step of the [climb](#climb), passed or failed; the [judge](#judge) then checks it.
+Explaining an idea from memory, with the note closed. Passing a [spar](#spar) session on a [concept note](#concept-note) is the Retrieve step of the [climb](#climb); the [judge](#judge) then checks it.
 
 ## Review
 
@@ -76,7 +76,7 @@ One recorded sparring round on one note: the questions, your answers and the ver
 
 ## Space
 
-Coming back to an idea after a gap, at least a day after your previous attempt, and sparring it again. It is the Space step of the [climb](#climb). A spaced spar you pass opens [Teach](#teach).
+Coming back to an idea after a gap, at least a day after your previous attempt, and sparring it again. It is the Space step of the [climb](#climb). Spaced spars you pass in two different [coaching styles](coaching-styles.md) open [Teach](#teach).
 
 ## Spar
 

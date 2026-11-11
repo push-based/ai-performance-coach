@@ -19,6 +19,7 @@ import {
   judgeFailedLatest,
   notePath,
   referenceOf,
+  teachGate,
   tier2History,
 } from '../history.js';
 import type { GuidelineCheck, Library } from '../ports/library.js';
@@ -170,11 +171,14 @@ export class Teaching {
         `${note.path} is not a concept note with core assertions: Teach works on a concept`,
       );
     const [climb] = await this.deps.notes.climb(note.path);
-    if (!climb?.teach.ok)
-      throw new NotSparrableError(
-        climb?.teach.reason ??
-          'Teach needs a passed spaced review: spar it again after a gap first',
-      );
+    const gate = climb
+      ? teachGate(climb)
+      : {
+          ok: false,
+          reason:
+            'Teach needs a passed spaced review: spar it again after a gap first',
+        };
+    if (!gate.ok) throw new NotSparrableError(gate.reason!);
     if (judgeFailedLatest(note)) throw new NotSparrableError(JUDGE_FAILED);
     return new TeachSession(this.deps, note, await this.misconception(note));
   }

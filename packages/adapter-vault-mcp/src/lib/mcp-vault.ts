@@ -116,6 +116,7 @@ function details(note: ReadNoteResult): NoteDetails {
       verdict: e.verdict,
       gaps: e.gaps,
       nextReview: e.next_review,
+      ...(e.style ? { style: e.style } : {}),
     })),
   };
 }
@@ -194,6 +195,7 @@ export class McpVault
             verdict: item.verdict,
             gaps: item.gaps,
             next_review: item.nextReview,
+            ...(item.style ? { style: item.style } : {}),
           };
           return 'coachId' in item.note
             ? { coach_id: item.note.coachId, ...fields }

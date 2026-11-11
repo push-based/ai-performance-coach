@@ -28,6 +28,7 @@ export interface SessionEntry {
   verdict: Verdict;
   gaps: string[];
   nextReview: string;
+  style?: CoachingStyle;
 }
 
 export interface BookChapter {
@@ -107,6 +108,7 @@ export interface ConceptClimb {
   next: ClimbStep | null;
   skipped: ClimbStep[];
   spacedPass: StepEvidence | null;
+  spacedStyles: CoachingStyle[];
   teach: { ok: boolean; reason?: string };
 }
 
@@ -138,6 +140,7 @@ export interface SessionItemDraft {
   verdict: Verdict;
   gaps: string[];
   nextReview: string;
+  style?: CoachingStyle;
 }
 
 export interface SessionDraft {

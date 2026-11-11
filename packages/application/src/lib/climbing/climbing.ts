@@ -2,6 +2,7 @@ import {
   JUDGE_FAILED,
   judgeFailedLatest,
   resourcesByCoachId,
+  teachGate,
 } from '../history.js';
 import type { PendingJudgements } from '../ports/state.js';
 import type {
@@ -51,7 +52,7 @@ export class Climbing {
         ...c,
         teach: (await this.judgeFailed(c))
           ? { ok: false, reason: JUDGE_FAILED }
-          : c.teach,
+          : teachGate(c),
         waitingForJudge: waiting.has(c.path),
       })),
     );

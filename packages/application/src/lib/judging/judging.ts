@@ -112,8 +112,10 @@ export class Judging {
         gaps,
         nextReview,
       });
+      const style = session.styles?.[coachId];
       draft.items.push({
         note: { coachId },
+        ...(style ? { style } : {}),
         challenge: payload.items[i]!.challenge,
         answer: payload.items[i]!.answer,
         verdict: judgement.verdict,

@@ -30,6 +30,8 @@ The first of these that is set wins:
 3. [`sparring.style`](configuration.md#settings) in your configuration,
 4. otherwise the coach picks one by reading the note.
 
+That gives the note's own style. There's one exception, in the Space step: [Teach](the-climb.md#7-teach) needs spaced passes in two different styles. So once you've passed a spaced spar in the note's own style, `coach spar` without `--style` uses a second style until you pass in that one too: `socratic`, or `feynman` when the note's own style is `socratic`. Every spar session records the style it was sparred in.
+
 To fix a style for one note, add it to the note's frontmatter:
 
 ```yaml

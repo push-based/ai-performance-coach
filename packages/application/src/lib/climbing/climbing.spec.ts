@@ -18,6 +18,7 @@ function climbOf(path: string, title: string): ConceptClimb {
     next: 'read',
     skipped: [],
     spacedPass: null,
+    spacedStyles: [],
     teach: { ok: false, reason: 'Teach needs a passed spaced review' },
   };
 }
@@ -96,6 +97,7 @@ describe('Climbing', () => {
   it('locks Teach when the judge failed the latest round', async () => {
     const vault = await vaultWithConcepts();
     vault.climbs[0]!.teach = { ok: true };
+    vault.climbs[0]!.spacedStyles = ['feynman', 'socratic'];
     await vault.record(
       {
         tier: 2,
@@ -118,5 +120,17 @@ describe('Climbing', () => {
       ok: false,
       reason: JUDGE_FAILED,
     });
+  });
+
+  it('keeps Teach closed until spaced passes in two styles', async () => {
+    const vault = await vaultWithConcepts();
+    vault.climbs[0]!.teach = { ok: true };
+    vault.climbs[0]!.spacedStyles = ['feynman'];
+    const climbing = new Climbing(vault, new InMemoryPending());
+    expect((await climbing.concept(TOKENS)).teach.reason).toMatch(
+      /2 different styles \(passed so far in feynman\)/,
+    );
+    vault.climbs[0]!.spacedStyles = ['feynman', 'devil'];
+    expect((await climbing.concept(TOKENS)).teach).toEqual({ ok: true });
   });
 });

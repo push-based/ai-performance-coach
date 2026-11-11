@@ -45,6 +45,7 @@ function setup(open = true) {
     next: 'teach',
     skipped: [],
     spacedPass: open ? { date: '2026-11-10', evidence: 's-2' } : null,
+    spacedStyles: open ? ['cornell', 'socratic'] : [],
     teach: open
       ? { ok: true }
       : { ok: false, reason: 'Teach needs a passed spaced review.' },
@@ -106,6 +107,14 @@ describe('Teaching', () => {
     const { teaching } = setup(false);
     await expect(teaching.open('Design tokens')).rejects.toThrow(
       new NotSparrableError('Teach needs a passed spaced review.'),
+    );
+  });
+
+  it('refuses a concept passed in only one style, and names it', async () => {
+    const { vault, teaching } = setup();
+    vault.climbs[0]!.spacedStyles = ['cornell'];
+    await expect(teaching.open(TOKENS)).rejects.toThrow(
+      /2 different styles \(passed so far in cornell\)/,
     );
   });
 
