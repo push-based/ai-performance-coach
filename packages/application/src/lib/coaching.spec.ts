@@ -1,6 +1,9 @@
 import {
+  CLIMB_STEPS,
   DEFAULT_LADDER,
   sparringRules,
+  type ClimbSteps,
+  type CoachingStyle,
   type ItemJudgement,
 } from '@ai-coach/domain';
 import {
@@ -127,6 +130,53 @@ describe('coaching style', () => {
     expect((await make().open(EVENT_LOOP)).conversation.style).toBe('cornell');
     expect(classifier.classified).toEqual(['Event loop']);
   });
+
+  it('switches a concept to a second style once its own style has a spaced pass', async () => {
+    const vault = new InMemoryVault();
+    vault.put(PROMISES, 'A promise settles once.', {
+      rawRole: null,
+      style: 'cornell',
+      concept: {
+        assertions: ['A promise settles once.'],
+        buzzwords: [],
+        passages: [],
+        problems: [],
+      },
+    });
+    const climb = {
+      path: PROMISES,
+      title: 'Promises',
+      steps: Object.fromEntries(
+        CLIMB_STEPS.map((step) => [step, null]),
+      ) as ClimbSteps,
+      stored: null,
+      current: true,
+      next: 'space' as const,
+      skipped: [],
+      spacedPass: null,
+      spacedStyles: [] as CoachingStyle[],
+      teach: { ok: false },
+    };
+    vault.climbs.push(climb);
+    const sparring = new Sparring({
+      notes: vault,
+      sessions: vault,
+      pending: new InMemoryPending(),
+      partner: new ScriptedPartner(),
+      classifier: new FixedClassifier(),
+      rules: sparringRules(),
+      ladder: DEFAULT_LADDER,
+    });
+    const style = async (flag?: CoachingStyle) =>
+      (await sparring.open(PROMISES, flag)).conversation.style;
+
+    expect(await style()).toBe('cornell');
+    climb.spacedStyles = ['cornell'];
+    expect(await style()).toBe('socratic');
+    expect(await style('devil')).toBe('devil');
+    climb.spacedStyles = ['cornell', 'socratic'];
+    expect(await style()).toBe('cornell');
+  });
 });
 
 describe('judging a concept', () => {
@@ -248,6 +298,9 @@ describe('coaching use cases against in-memory adapters', () => {
         styles: { [recorded.items[0]!.coachId]: 'feynman' },
       },
     ]);
+    expect((await s.vault.readNote(EVENT_LOOP)).sessions[0]!.style).toBe(
+      'feynman',
+    );
     expect((await s.review.due('2026-10-24')).waitingForJudge).toBe(1);
     const again = await sparOnce(s, EVENT_LOOP, 'pass', '2026-10-25');
     expect(again.items[0]).toMatchObject({ nextReview: '2026-10-28' });
@@ -272,6 +325,9 @@ describe('coaching use cases against in-memory adapters', () => {
     });
 
     await s.judging.record(judged);
+    expect(
+      (await s.vault.readNote(EVENT_LOOP)).sessions.map((e) => e.style),
+    ).toEqual(['feynman', 'feynman']);
     expect(s.pending.sessions).toEqual([]);
     expect((await s.vault.readNote(EVENT_LOOP)).mastery).toBe('tier2_passed');
 

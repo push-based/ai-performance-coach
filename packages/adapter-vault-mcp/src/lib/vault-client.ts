@@ -62,6 +62,7 @@ export type SessionItemInput = (
   verdict?: Verdict;
   gaps?: string[];
   next_review?: string;
+  style?: string;
   generate?: {
     attempted_at: string;
     revealed_at: string;

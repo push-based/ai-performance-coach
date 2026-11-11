@@ -1,13 +1,18 @@
-import type {
-  CoachingStyle,
-  Note,
-  Passage,
-  SparringRules,
-  Tier2Outcome,
+import {
+  TEACH_STYLES,
+  type CoachingStyle,
+  type Note,
+  type Passage,
+  type SparringRules,
+  type Tier2Outcome,
 } from '@ai-coach/domain';
 import { NotFoundError } from './errors.js';
 import type { StyleClassifier } from './ports/models.js';
-import type { NoteDetails, NotesRepository } from './ports/vault.js';
+import type {
+  ConceptClimb,
+  NoteDetails,
+  NotesRepository,
+} from './ports/vault.js';
 
 export function tier2History(note: NoteDetails): Tier2Outcome[] {
   return note.sessions
@@ -17,6 +22,19 @@ export function tier2History(note: NoteDetails): Tier2Outcome[] {
 
 export const JUDGE_FAILED =
   'The judge failed the latest round on this concept: spar it and pass again before teaching';
+
+export function needsTwoStyles(styles: readonly CoachingStyle[]): string {
+  const passed = styles.length
+    ? `passed so far in ${styles.join(', ')}`
+    : 'none passed so far';
+  return `Teach needs spaced passes in ${TEACH_STYLES} different styles (${passed}): spar it again after a gap, and coach spar picks the other style`;
+}
+
+export function teachGate(climb: ConceptClimb): ConceptClimb['teach'] {
+  if (!climb.teach.ok) return climb.teach;
+  if (climb.spacedStyles.length >= TEACH_STYLES) return climb.teach;
+  return { ok: false, reason: needsTwoStyles(climb.spacedStyles) };
+}
 
 export function judgeFailedLatest(note: NoteDetails): boolean {
   const latest = note.sessions.at(-1);

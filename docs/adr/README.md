@@ -50,3 +50,4 @@ Every important or major change to ai-coach ships with an ADR in this folder; AD
 | [0044](0044-teach-a-student-that-knows-only-the-title-and-one-misconception.md)         | Teach a student that knows only the title and one misconception                                       | proposed               |
 | [0045](0045-unify-paper-and-terminal-reading-and-calibrate-the-climb-with-the-judge.md) | Unify paper and terminal reading in synthesis, and guard the climb with the judge                     | proposed               |
 | [0046](0046-word-elaboration-in-the-notes-style-and-probe-its-assumptions.md)           | Word Elaborate in the note's coaching style, and probe the reasons and assumptions behind each answer | proposed               |
+| [0047](0047-pass-retrieve-and-open-teach-after-spaced-passes-in-two-styles.md)          | Count Retrieve only on a pass, and open Teach after spaced passes in two coaching styles              | proposed               |

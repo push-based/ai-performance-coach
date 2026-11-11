@@ -113,6 +113,7 @@ interface StoredSession {
     verdict: 'pass' | 'fail';
     gaps: string[];
     nextReview: string;
+    style?: CoachingStyle;
   }[];
 }
 
@@ -171,6 +172,7 @@ export class InMemoryVault implements NotesRepository, SessionLog, VaultFiling {
           verdict: i.verdict,
           gaps: i.gaps,
           nextReview: i.nextReview,
+          ...(i.style ? { style: i.style } : {}),
         })),
     );
   }
@@ -344,6 +346,7 @@ export class InMemoryVault implements NotesRepository, SessionLog, VaultFiling {
           verdict: item.verdict,
           gaps: item.gaps,
           nextReview: item.nextReview,
+          ...(item.style ? { style: item.style } : {}),
         })),
       });
     }

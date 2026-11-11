@@ -72,7 +72,7 @@ The coach gathers every summary, highlight, bold and note you made on the book, 
 
 ## The seven steps
 
-The order is a recommendation, not a lock. You can do any step before an earlier one; `coach climb` then lists the earlier ones as skipped. Only Teach waits for something: a spaced spar you passed.
+The order is a recommendation, not a lock. You can do any step before an earlier one; `coach climb` then lists the earlier ones as skipped. Only Teach waits for something: spaced spars you passed in two different [coaching styles](coaching-styles.md).
 
 A step counts when your vault holds its proof: a reading note, a structure note, or a recorded session. The vault server works that out and keeps a `climb:` summary in each concept note's frontmatter. You never edit it. If it ever disagrees with the proof, `coach climb` says so and `coach climb --rebuild` fixes it, after a preview.
 
@@ -112,7 +112,7 @@ A step counts when your vault holds its proof: a reading note, a structure note,
 
 **Command:** `coach spar <note>`, then `coach judge` when you're online. Add `--free-recall` to start by writing down everything you remember; the coach then asks only about what you left out. See [Free recall](glossary.md#free-recall).
 
-**Counts when** a spar session on the note is recorded, passed or failed. Trying is the step; passing comes with practice.
+**Counts when** you pass a spar on the note. A failed spar is still recorded and still schedules a review, but Retrieve stays open until you pass one. The pass from `coach spar` is enough; the judge doesn't have to agree first.
 
 **Why:** pulling an idea out of memory is what makes it stay there. Re-reading doesn't.
 
@@ -150,7 +150,11 @@ If either tier fails you, run `coach study <note>` to work through the gaps with
 
 **Command:** `coach due` shows what's due today. Then `coach spar`, and `coach judge` when you're online.
 
-**Counts when** you spar the idea at least a day after your previous attempt on it, passed or failed. A judgement doesn't count: the judge grades an answer you already gave, so it isn't a new recall. To open Teach, you need a spaced spar you **passed**.
+**Counts when** you spar the idea at least a day after your previous attempt on it, passed or failed. A judgement doesn't count: the judge grades an answer you already gave, so it isn't a new recall. To open Teach, you need spaced spars you **passed** in **two different styles**.
+
+**The coach switches the style for you.** Once you've passed a spaced spar in the note's own style, `coach spar` uses a second style for the note until you pass in that one too: `socratic`, or `feynman` when the note's own style is `socratic`. After that it goes back to the note's own style. `--style` always wins, so you can pick the second style yourself, for example `coach spar "Design tokens" --style devil`.
+
+Two styles ask about the same idea from two angles, such as how it works and where it stops holding. Passing both shows you know the idea, not one way of asking about it.
 
 **Why:** recalling something just as you're about to forget it is what makes it last. The coach mixes topics when several ideas are due, so two ideas from the same group or book don't come one after the other.
 
@@ -172,7 +176,7 @@ Only the judge moves you up the long ladder: a spar pass alone never takes an id
 
 **Command:** `coach teach <note>`. Type `/done` when you've taught it.
 
-**Opens when** you've passed a spaced spar: a spar passed at least a day after the attempt before it. It closes again if the judge failed your latest round on the idea: spar it and pass again first. `coach climb` tells you which of the two is in the way.
+**Opens when** you've passed spaced spars in two different styles. A spaced spar is one at least a day after the attempt before it. It closes again if the judge failed your latest round on the idea: spar it and pass again first. `coach climb` tells you what's in the way, and which styles you've passed so far.
 
 **Counts when** you pass a lesson. You pass when you corrected the student's wrong belief out loud ("no, actually…"), taught every core assertion, and explained every term you used. At the end the student explains back what it understood, and you fix anything wrong.
 
@@ -183,4 +187,4 @@ Only the judge moves you up the long ladder: a spar pass alone never takes an id
 - [Commands](commands.md) lists every command and option.
 - [Configuration](configuration.md) changes the review ladder and the sparring rules.
 - [Glossary](glossary.md) explains each term.
-- [Decisions](../adr/README.md) explain why the climb works this way, from ADR-0037 to ADR-0045.
+- [Decisions](../adr/README.md) explain why the climb works this way, from ADR-0037 to ADR-0047.

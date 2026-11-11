@@ -96,6 +96,20 @@ export const STYLE_GUIDES: Record<CoachingStyle, StyleGuide> = {
   },
 };
 
+export const TEACH_STYLES = 2;
+
+export function secondStyle(home: CoachingStyle): CoachingStyle {
+  return home === 'socratic' ? 'feynman' : 'socratic';
+}
+
+export function spacedStyle(
+  home: CoachingStyle,
+  passed: readonly CoachingStyle[],
+): CoachingStyle {
+  const rotate = passed.includes(home) && passed.length < TEACH_STYLES;
+  return rotate ? secondStyle(home) : home;
+}
+
 export function isCoachingStyle(value: unknown): value is CoachingStyle {
   return (
     typeof value === 'string' &&

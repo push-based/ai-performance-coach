@@ -1,5 +1,6 @@
 import {
   scheduleReview,
+  spacedStyle,
   type CoachingStyle,
   type Ladder,
   type SparringResult,
@@ -108,18 +109,30 @@ export class Sparring {
         this.deps.partner,
         referenceOf(note),
         this.deps.rules,
-        await resolveStyle(note, this.deps.rules, this.deps.classifier, style),
+        style ?? (await this.spacedStyle(note)),
         options,
       ),
     };
+  }
+
+  private async spacedStyle(note: NoteDetails): Promise<CoachingStyle> {
+    const home = await resolveStyle(
+      note,
+      this.deps.rules,
+      this.deps.classifier,
+    );
+    if (!note.concept) return home;
+    const [climb] = await this.deps.notes.climb(note.path);
+    return spacedStyle(home, climb?.spacedStyles ?? []);
   }
 
   async plan(sparred: SparredNote[], today: string): Promise<Tier1Plan> {
     const draft: SessionDraft = {
       tier: 1,
       date: today,
-      items: sparred.map(({ note, result }) => ({
+      items: sparred.map(({ note, result, style }) => ({
         note: note.coachId ? { coachId: note.coachId } : { path: note.path },
+        style,
         challenge: result.challenge,
         answer: result.answer,
         verdict: result.verdict,

@@ -39,6 +39,7 @@ function tokens(overrides: Partial<ClimbStatus> = {}): ClimbStatus {
     next: 'elaborate',
     skipped: [],
     spacedPass: null,
+    spacedStyles: [],
     teach: { ok: false, reason: 'Teach needs a passed spaced review' },
     waitingForJudge: false,
     ...overrides,
